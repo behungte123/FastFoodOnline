@@ -1,0 +1,329 @@
+@model IEnumerable<FastFoodOnline.Models.Combo>
+
+@{
+    ViewData["Title"] = "Quản lý Combo";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Page Header */
+    .page-header h2 {
+        color: var(--kfc-dark);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    /* Card Layout */
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+    }
+
+    .table-toolbar {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* Table Styles */
+    .admin-table thead th {
+        background-color: #fcfcfc;
+        color: #888;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-bottom: 2px solid #eee;
+        padding: 15px 20px;
+        letter-spacing: 0.5px;
+    }
+
+    .admin-table tbody td {
+        padding: 15px 20px;
+        vertical-align: top; /* Align top for multi-line content */
+        border-bottom: 1px dashed #eee;
+        color: #444;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .admin-table tbody tr:hover {
+        background-color: #fffbfc;
+    }
+
+    /* Combo Image */
+    .combo-thumb {
+        width: 80px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #eee;
+        background-color: #fff;
+    }
+
+    /* Combo Details */
+    .combo-name {
+        font-weight: 700;
+        color: var(--kfc-dark);
+        font-size: 1rem;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .combo-desc {
+        font-size: 0.8rem;
+        color: #888;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Combo Items List */
+    .combo-items-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .combo-items-list li {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+            .combo-items-list li i {
+                font-size: 0.7rem;
+                color: var(--kfc-red);
+                margin-right: 8px;
+            }
+
+    /* Badges */
+    .badge-soft {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    .badge-soft-success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .badge-soft-secondary {
+        background-color: #e2e3e5;
+        color: #41464b;
+    }
+
+    /* Buttons */
+    .btn-add-new {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-weight: 700;
+        border: none;
+        box-shadow: 0 4px 10px rgba(228, 0, 43, 0.2);
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-add-new:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-back {
+        background-color: white;
+        color: #666;
+        border: 1px solid #ddd;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s;
+        margin-right: 10px;
+    }
+
+        .btn-back:hover {
+            background-color: #f8f9fa;
+            color: var(--kfc-dark);
+        }
+
+    /* Action Icons */
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        transition: all 0.2s;
+        background-color: transparent;
+        border: 1px solid transparent;
+        margin-left: 5px;
+        text-decoration: none;
+    }
+
+        .action-btn i {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .action-btn:hover {
+            background-color: #f0f0f0;
+            color: var(--kfc-red);
+        }
+
+        .action-btn.btn-delete:hover {
+            background-color: #fff0f3;
+            color: #dc3545;
+            border-color: #ffccd5;
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+        <div>
+            <h2 class="mb-1">Quản lý Combo</h2>
+            <p class="text-muted mb-0">Thiết lập các gói combo ưu đãi cho khách hàng.</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index")" class="btn-back">
+                <i class="bi bi-arrow-left me-2"></i> Quay lại
+            </a>
+            <a href="@Url.Action("CreateCombo", "Products", new { area = "Admin" })" class="btn-add-new">
+                <i class="bi bi-plus-lg me-1"></i> Thêm Combo Mới
+            </a>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-toolbar">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 fw-bold text-uppercase text-dark border-start border-4 border-danger ps-3">Danh sách Combo</h5>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 60px;">ID</th>
+                        <th style="width: 350px;">Thông tin Combo</th>
+                        <th>Thành phần</th>
+                        <th style="width: 120px;">Giá bán</th>
+                        <th style="width: 120px;">Trạng thái</th>
+                        <th class="text-end pe-4" style="width: 150px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var combo in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-muted">#@combo.Id</td>
+                            <td>
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3">
+                                        @if (!string.IsNullOrEmpty(combo.ImageUrl))
+                                        {
+                                            <img src="@combo.ImageUrl" alt="@combo.Name" class="combo-thumb" />
+                                        }
+                                        else
+                                        {
+                                            <div class="combo-thumb d-flex align-items-center justify-content-center text-muted bg-light">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div>
+                                        <span class="combo-name">@combo.Name</span>
+                                        <span class="combo-desc" title="@combo.Description">@combo.Description</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (combo.Items != null && combo.Items.Any())
+                                {
+                                    <ul class="combo-items-list">
+                                        @foreach (var item in combo.Items.Take(3))
+                                        {
+                                            <li>
+                                                <i class="bi bi-circle-fill"></i>
+                                                <span>@item.Food?.Name <strong class="text-dark">x @item.Quantity</strong></span>
+                                            </li>
+                                        }
+                                        @if (combo.Items.Count > 3)
+                                        {
+                                            <li class="text-muted fst-italic ps-3">+ @(combo.Items.Count - 3) món khác...</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic small">Chưa có món ăn</span>
+                                }
+                            </td>
+                            <td class="fw-bold text-danger">@combo.Price.ToString("N0") ₫</td>
+                            <td>
+                                @if (combo.IsActive)
+                                {
+                                    <span class="badge badge-soft badge-soft-success">
+                                        <i class="bi bi-check-circle me-1"></i> Đang bán
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft badge-soft-secondary">
+                                        <i class="bi bi-slash-circle me-1"></i> Ngừng bán
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="@Url.Action("ComboDetails", "Products", new { area = "Admin", id = combo.Id })" class="action-btn" title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="@Url.Action("EditCombo", "Products", new { area = "Admin", id = combo.Id })" class="action-btn" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="@Url.Action("DeleteCombo", "Products", new { area = "Admin", id = combo.Id })" class="action-btn btn-delete" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa combo này?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 border-top bg-light d-flex justify-content-end">
+            <small class="text-muted">Hiển thị @Model.Count() combo</small>
+        </div>
+    </div>
+</div>

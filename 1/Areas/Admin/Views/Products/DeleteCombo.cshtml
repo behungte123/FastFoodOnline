@@ -1,0 +1,126 @@
+@model FastFoodOnline.Models.Combo
+
+@{
+    ViewData["Title"] = "Xóa Combo";
+}
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Xác nhận xóa Combo
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <h5><i class="bi bi-exclamation-circle"></i> Cảnh báo!</h5>
+                    <p class="mb-0">Bạn có chắc chắn muốn xóa combo này? Hành động này không thể hoàn tác.</p>
+                </div>
+
+                <div class="row">
+                    <!-- Combo Image -->
+                    <div class="col-md-5">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name" style="max-height: 300px; object-fit: contain; background-color: #f8f9fa; width: 100%;" />
+                        }
+                        else
+                        {
+                            <div class="text-center p-5 bg-light rounded">
+                                <i class="bi bi-image" style="font-size: 4rem; color: #ccc;"></i>
+                                <p class="text-muted mt-2">Không có hình ảnh</p>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Combo Details -->
+                    <div class="col-md-7">
+                        <h4 class="mb-3">Thông tin combo sẽ bị xóa</h4>
+
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 35%;">ID:</th>
+                                    <td>@Model.Id</td>
+                                </tr>
+                                <tr>
+                                    <th>Tên combo:</th>
+                                    <td><strong>@Model.Name</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Mô tả:</th>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(Model.Description))
+                                        {
+                                            @Model.Description
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có mô tả</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Giá:</th>
+                                    <td><span class="badge bg-success fs-6">@Model.Price.ToString("N0") đ</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Trạng thái:</th>
+                                    <td>
+                                        @if (Model.IsActive)
+                                        {
+                                            <span class="badge bg-success">Đang bán</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Ngừng bán</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <strong>Sản phẩm trong combo:</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var item in Model.Items)
+                                        {
+                                            if (item.Food != null)
+                                            {
+                                                <li class="mb-2">
+                                                    <i class="bi bi-check-circle text-success"></i>
+                                                    <strong>@item.Food.Name</strong> x @item.Quantity
+                                                    <span class="text-muted">(@item.Food.Category?.Name)</span>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <form asp-action="DeleteCombo" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Combos" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Không, quay lại
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash"></i> Có, xóa combo này
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

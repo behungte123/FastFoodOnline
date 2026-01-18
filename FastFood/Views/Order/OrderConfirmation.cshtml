@@ -1,0 +1,250 @@
+@model FastFoodOnline.Models.Order
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-green: #28a745;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Success Icon Animation */
+    .success-icon-wrapper {
+        width: 100px;
+        height: 100px;
+        background-color: #fff0f3;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 0 10px rgba(228, 0, 43, 0.1);
+    }
+
+    .success-icon {
+        font-size: 3.5rem;
+        color: var(--kfc-red);
+        animation: scaleUp 0.5s ease-out;
+    }
+
+    @@keyframes scaleUp {
+        0%
+
+    {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    }
+
+    /* Receipt Card */
+    .receipt-card {
+        background: white;
+        border-radius: 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: none;
+        position: relative;
+        margin-bottom: 2rem;
+        padding: 2rem;
+    }
+
+        /* Răng cưa (Jagged Edge) cho hóa đơn */
+        .receipt-card::before, .receipt-card::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: var(--kfc-gray); /* Màu nền body */
+            -webkit-mask-image: radial-gradient(circle at 10px 10px, transparent 10px, black 11px);
+            -webkit-mask-position: -10px 0;
+            -webkit-mask-size: 20px 20px;
+        }
+
+        .receipt-card::before {
+            top: -10px;
+            transform: rotate(180deg);
+        }
+
+        .receipt-card::after {
+            bottom: -10px;
+        }
+
+    .order-id {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--kfc-dark);
+        letter-spacing: 1px;
+    }
+
+    /* Dashed Separator */
+    .dashed-line {
+        border-top: 2px dashed #eee;
+        margin: 1.5rem 0;
+    }
+
+    /* List Item */
+    .confirm-item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        color: #555;
+    }
+
+        .confirm-item-row strong {
+            color: var(--kfc-dark);
+        }
+
+    /* Buttons */
+    .btn-home {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 12px 30px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(228, 0, 43, 0.3);
+        transition: all 0.3s;
+    }
+
+        .btn-home:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-history {
+        color: #666;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 10px 20px;
+        display: inline-block;
+        transition: color 0.2s;
+    }
+
+        .btn-history:hover {
+            color: var(--kfc-red);
+        }
+</style>
+
+<div class="container mt-5 fade-in-up mb-5">
+
+    <div class="text-center mb-5">
+        <div class="success-icon-wrapper">
+            <i class="bi bi-check-lg success-icon"></i>
+        </div>
+        <h1 class="text-uppercase fw-bolder mb-2" style="color: var(--kfc-dark);">Đặt hàng thành công!</h1>
+        <p class="text-muted fs-5">Cảm ơn bạn đã tin tưởng F&B Chill. Món ngon đang được chuẩn bị!</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="receipt-card">
+                @* Header Hóa đơn *@
+                <div class="text-center mb-4">
+                    <small class="text-uppercase text-muted fw-bold ls-1">Mã đơn hàng</small>
+                    <div class="order-id">#@Model.Id</div>
+                    <span class="badge bg-warning text-dark mt-2 px-3 py-2 rounded-pill">
+                        <i class="bi bi-hourglass-split me-1"></i> @Model.Status
+                    </span>
+                </div>
+
+                <div class="dashed-line"></div>
+
+                @* Thông tin giao hàng *@
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-danger fw-bold mb-3 small">Thông tin giao nhận</h6>
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="bi bi-clock me-2 text-muted mt-1"></i>
+                        <div>
+                            <strong>Thời gian đặt:</strong> <br>
+                            @Model.OrderDate.ToString("dd/MM/yyyy - HH:mm")
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="bi bi-geo-alt-fill me-2 text-muted mt-1"></i>
+                        <div>
+                            <strong>Địa chỉ:</strong> <br>
+                            @Model.DeliveryAddress
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-pencil-fill me-2 text-muted mt-1"></i>
+                            <div>
+                                <strong>Ghi chú:</strong> <br>
+                                <span class="fst-italic text-muted">"@Model.Notes"</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="dashed-line"></div>
+
+                @* Chi tiết món *@
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-danger fw-bold mb-3 small">Chi tiết đơn hàng</h6>
+                    @foreach (var item in Model.Items)
+                    {
+                        var productName = item.Food?.Name ?? item.Combo?.Name ?? "Sản phẩm";
+                        var totalPrice = item.Quantity * item.UnitPrice;
+
+                        <div class="confirm-item-row">
+                            <div>
+                                <span class="fw-bold me-2">@item.Quantity x</span>
+                                <span>@productName</span>
+                            </div>
+                            <span class="fw-bold">@totalPrice.ToString("N0") ₫</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="dashed-line"></div>
+
+                @* Tổng cộng *@
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fs-5 fw-bold text-uppercase text-dark">Tổng thanh toán</span>
+                    <span class="fs-4 fw-bolder text-danger">@Model.TotalAmount.ToString("N0") ₫</span>
+                </div>
+
+                <div class="text-center mt-3 small text-muted">
+                    <i class="bi bi-cash-stack me-1"></i> Phương thức: Thanh toán khi nhận hàng (COD)
+                </div>
+            </div>
+
+            @* Buttons *@
+            <div class="text-center mt-4">
+                <div class="d-grid gap-2 d-sm-flex justify-content-center">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-home">
+                        <i class="bi bi-house-door-fill me-2"></i> Về trang chủ
+                    </a>
+                    <a asp-controller="Account" asp-action="MyOrders" class="btn btn-history mt-2 mt-sm-0">
+                        Xem lịch sử đơn hàng &rarr;
+                    </a>
+                </div>
+
+                <p class="mt-4 mb-0 text-muted small">
+                    Mọi thắc mắc vui lòng liên hệ hotline <strong class="text-dark">1900 xxxx</strong> để được hỗ trợ.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

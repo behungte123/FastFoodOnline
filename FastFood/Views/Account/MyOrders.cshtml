@@ -1,0 +1,296 @@
+@model IEnumerable<FastFoodOnline.Models.Order>
+
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    var currentUser = Context.Session.GetString("UserName");
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    /* --- SIDEBAR STYLES --- */
+    .profile-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+        background: white;
+    }
+
+    .avatar-section {
+        background: linear-gradient(135deg, #fff0f3 0%, #ffffff 100%);
+        padding: 30px 20px;
+    }
+
+    .user-avatar-icon {
+        font-size: 80px;
+        color: var(--kfc-red);
+        background: white;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        box-shadow: 0 5px 15px rgba(228, 0, 43, 0.15);
+    }
+
+    .sidebar-menu .list-group-item {
+        border: none;
+        padding: 15px 20px;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.2s;
+        border-left: 4px solid transparent;
+    }
+
+        .sidebar-menu .list-group-item:hover {
+            background-color: #fcfcfc;
+            color: var(--kfc-red);
+            padding-left: 25px; /* Hiệu ứng trượt nhẹ */
+        }
+
+        .sidebar-menu .list-group-item.active {
+            background-color: #fff0f3;
+            color: var(--kfc-red);
+            border-left-color: var(--kfc-red);
+        }
+
+    /* --- ORDER TABLE STYLES --- */
+    .order-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        background: white;
+        overflow: hidden;
+    }
+
+    .order-header {
+        background-color: white;
+        padding: 20px 25px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+        .order-header h4 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.25rem;
+            margin: 0;
+            border-left: 5px solid var(--kfc-red);
+            padding-left: 15px;
+        }
+
+    .kfc-table thead th {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .kfc-table tbody td {
+        vertical-align: middle;
+        padding: 15px;
+        color: #444;
+        font-weight: 500;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .kfc-table tbody tr:hover {
+        background-color: #fffbfc; /* Màu hồng cực nhạt khi hover */
+    }
+
+    .kfc-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Badges */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-block;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processing {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    .status-completed {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-cancelled {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .status-default {
+        background-color: #e2e3e5;
+        color: #41464b;
+    }
+
+    /* Buttons */
+    .btn-detail {
+        border: 2px solid var(--kfc-red);
+        color: var(--kfc-red);
+        background: transparent;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 5px 15px;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-detail:hover {
+            background-color: var(--kfc-red);
+            color: white;
+        }
+</style>
+
+<div class="row fade-in-up">
+    @* --- CỘT TRÁI: SIDEBAR MENU --- *@
+    <div class="col-lg-3 col-md-4 mb-4">
+        <div class="profile-card">
+            <div class="avatar-section text-center">
+                <div class="user-avatar-icon">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-uppercase">@currentUser</h5>
+                <small class="text-muted">Thành viên thân thiết</small>
+            </div>
+            <div class="list-group list-group-flush sidebar-menu">
+                <a href="@Url.Action("Profile", "Account")" class="list-group-item list-group-item-action">
+                    <i class="bi bi-person-vcard me-2"></i> Thông tin cá nhân
+                </a>
+                <a href="@Url.Action("MyOrders", "Account")" class="list-group-item list-group-item-action active">
+                    <i class="bi bi-bag-check-fill me-2"></i> Đơn hàng của tôi
+                </a>
+                @if (Context.Session.GetInt32("UserRole") == 1)
+                {
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="list-group-item list-group-item-action">
+                        <i class="bi bi-speedometer2 me-2"></i> Quản trị hệ thống
+                    </a>
+                }
+                <a href="@Url.Action("Logout", "Account")" class="list-group-item list-group-item-action text-danger fw-bold border-top mt-2">
+                    <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @* --- CỘT PHẢI: DANH SÁCH ĐƠN HÀNG --- *@
+    <div class="col-lg-9 col-md-8">
+        <div class="order-card">
+            <div class="order-header">
+                <h4>Lịch sử đơn hàng</h4>
+            </div>
+
+            <div class="card-body p-0">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table kfc-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Ngày đặt</th>
+                                    <th style="min-width: 200px;">Địa chỉ</th>
+                                    <th>Tổng tiền</th>
+                                    <th class="text-center">Trạng thái</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-danger">#@order.Id</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-bold">@order.OrderDate.ToString("dd/MM/yyyy")</span>
+                                                <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="text-truncate-2" title="@order.DeliveryAddress">
+                                                @order.DeliveryAddress
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-success">@order.TotalAmount.ToString("N0") ₫</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (order.Status == "Pending")
+                                            {
+                                                <span class="status-badge status-pending">Chờ xử lý</span>
+                                            }
+                                            else if (order.Status == "Processing")
+                                            {
+                                                <span class="status-badge status-processing">Đang làm</span>
+                                            }
+                                            else if (order.Status == "Completed")
+                                            {
+                                                <span class="status-badge status-completed">Hoàn thành</span>
+                                            }
+                                            else if (order.Status == "Cancelled")
+                                            {
+                                                <span class="status-badge status-cancelled">Đã hủy</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-badge status-default">@order.Status</span>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="@Url.Action("OrderDetails", "Account", new { id = order.Id })" class="btn-detail">
+                                                Xem
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-cart-x" style="font-size: 4rem; color: #ddd;"></i>
+                        </div>
+                        <h5 class="text-muted">Bạn chưa có đơn hàng nào</h5>
+                        <p class="text-muted small mb-4">Hãy khám phá thực đơn và đặt món ngay nhé!</p>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-danger rounded-pill px-4 fw-bold">
+                            ĐẶT MÓN NGAY
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

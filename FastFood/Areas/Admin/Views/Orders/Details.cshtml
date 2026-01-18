@@ -1,0 +1,352 @@
+@model FastFoodOnline.Models.Order
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Id;
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-green: #28a745;
+        --kfc-blue: #007bff;
+        --kfc-warning: #ffc107;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Page Header */
+    .page-header h2 {
+        color: var(--kfc-dark);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    /* Cards */
+    .kfc-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .kfc-card-header {
+        background-color: white;
+        padding: 20px 25px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .kfc-card-header h5 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            border-left: 5px solid var(--kfc-red);
+            padding-left: 15px;
+        }
+
+    /* Info Lists */
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .info-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+            .info-list li:last-child {
+                border-bottom: none;
+            }
+
+    .info-label {
+        font-weight: 600;
+        color: #888;
+    }
+
+    .info-value {
+        font-weight: 700;
+        color: var(--kfc-dark);
+        text-align: right;
+    }
+
+    /* Product Table (Mini) */
+    .mini-table th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #999;
+        border-top: none;
+    }
+
+    .mini-table td {
+        vertical-align: middle;
+        padding: 10px 5px;
+    }
+
+    /* Status Badge */
+    .status-badge-lg {
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .bg-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .bg-processing {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    .bg-completed {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .bg-cancelled {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    /* Action Buttons */
+    .btn-update {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        font-weight: 700;
+        padding: 10px 20px;
+        border: none;
+        width: 100%;
+        transition: all 0.2s;
+    }
+
+        .btn-update:hover {
+            background-color: #c40024;
+            color: white;
+        }
+
+    .btn-back {
+        background-color: #f0f0f0;
+        color: #666;
+        border-radius: 50px;
+        font-weight: 700;
+        padding: 10px 20px;
+        border: none;
+        width: 100%;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            background-color: #e0e0e0;
+            color: var(--kfc-dark);
+        }
+
+    .btn-delete-order {
+        color: #dc3545;
+        background: transparent;
+        border: 1px dashed #dc3545;
+        border-radius: 50px;
+        font-weight: 700;
+        padding: 8px;
+        width: 100%;
+        margin-top: 10px;
+        transition: all 0.2s;
+    }
+
+        .btn-delete-order:hover {
+            background: #fff0f3;
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+        <div>
+            <h2 class="mb-1">Chi tiết đơn hàng</h2>
+            <p class="text-muted mb-0">Mã đơn: <strong class="text-dark">#@Model.Id</strong></p>
+        </div>
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary rounded-pill px-3 fw-bold">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="kfc-card">
+                <div class="kfc-card-header">
+                    <h5><i class="bi bi-person-lines-fill me-2"></i> Thông tin khách hàng</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="info-list">
+                                <li>
+                                    <span class="info-label">Họ tên:</span>
+                                    <span class="info-value">@Model.Account?.FullName</span>
+                                </li>
+                                <li>
+                                    <span class="info-label">Email:</span>
+                                    <span class="info-value">@Model.Account?.Email</span>
+                                </li>
+                                <li>
+                                    <span class="info-label">Số điện thoại:</span>
+                                    <span class="info-value">@(Model.Account?.PhoneNumber ?? "---")</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="info-list">
+                                <li>
+                                    <span class="info-label">Ngày đặt:</span>
+                                    <span class="info-value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                                </li>
+                                <li>
+                                    <span class="info-label">Địa chỉ giao:</span>
+                                    <span class="info-value text-break" style="max-width: 200px; text-align: right;">@Model.DeliveryAddress</span>
+                                </li>
+                            </ul>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="col-12 mt-3 pt-3 border-top">
+                                <span class="info-label d-block mb-1">Ghi chú từ khách hàng:</span>
+                                <div class="p-3 bg-light rounded text-dark fst-italic">
+                                    "@Model.Notes"
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="kfc-card">
+                <div class="kfc-card-header">
+                    <h5><i class="bi bi-basket2 me-2"></i> Danh sách món ăn</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mini-table mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Sản phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Đơn giá</th>
+                                    <th class="text-end pe-4">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            @if (item.Food != null)
+                                            {
+                                                <span class="fw-bold text-dark">@item.Food.Name</span>
+                                            }
+                                            else if (item.Combo != null)
+                                            {
+                                                <span class="fw-bold text-dark">@item.Combo.Name</span>
+                                                <span class="badge bg-warning text-dark ms-1" style="font-size: 0.65rem;">COMBO</span>
+                                            }
+                                        </td>
+                                        <td class="text-center fw-bold">x @item.Quantity</td>
+                                        <td class="text-end text-muted">@item.UnitPrice.ToString("N0") đ</td>
+                                        <td class="text-end fw-bold pe-4">@((item.UnitPrice * item.Quantity).ToString("N0")) đ</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="bg-light">
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold text-uppercase py-3">Tổng thanh toán:</td>
+                                    <td class="text-end fw-bolder text-danger fs-5 py-3 pe-4">@Model.TotalAmount.ToString("N0") đ</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="kfc-card">
+                <div class="kfc-card-header">
+                    <h5><i class="bi bi-gear-fill me-2"></i> Xử lý đơn hàng</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4 text-center">
+                        <label class="info-label d-block mb-2">Trạng thái hiện tại</label>
+                        @if (Model.Status == "Pending")
+                        {
+                            <span class="status-badge-lg bg-pending">⏳ Chờ xử lý</span>
+                        }
+                        else if (Model.Status == "Processing")
+                        {
+                            <span class="status-badge-lg bg-processing">⚙️ Đang xử lý</span>
+                        }
+                        else if (Model.Status == "Completed")
+                        {
+                            <span class="status-badge-lg bg-completed">✅ Hoàn thành</span>
+                        }
+                        else if (Model.Status == "Cancelled")
+                        {
+                            <span class="status-badge-lg bg-cancelled">❌ Đã hủy</span>
+                        }
+                    </div>
+
+                    <form method="post" asp-action="UpdateStatus" asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase text-muted">Cập nhật trạng thái</label>
+                            <select name="status" class="form-select form-select-lg">
+                                @{
+                                    var statusOptions = new Dictionary<string, string>
+                                                                {
+                                                                { "Pending", "⏳ Chờ xử lý" },
+                                                                { "Processing", "⚙️ Đang xử lý" },
+                                                                { "Completed", "✅ Hoàn thành" },
+                                                                { "Cancelled", "❌ Hủy đơn hàng" }
+                                                                };
+                                    foreach (var status in statusOptions)
+                                    {
+                                        <option value="@status.Key" selected="@(Model.Status == status.Key)">@status.Value</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-update">
+                            <i class="bi bi-check-circle me-1"></i> Cập nhật
+                        </button>
+                    </form>
+
+                    <hr class="dashed-line my-4" style="border-top: 1px dashed #eee;">
+
+                    <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-delete-order" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn đơn hàng này?');">
+                        <i class="bi bi-trash me-1"></i> Xóa đơn hàng này
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

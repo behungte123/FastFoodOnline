@@ -1,0 +1,260 @@
+@model FastFoodOnline.Models.Food
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Breadcrumb Custom */
+    .breadcrumb-item a {
+        color: #888;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: var(--kfc-red);
+        }
+
+    .breadcrumb-item.active {
+        color: var(--kfc-red);
+        font-weight: 700;
+    }
+
+    /* Product Image */
+    .product-image-container {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        min-height: 400px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .product-image-container img {
+            max-width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+
+        .product-image-container:hover img {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+    /* Product Info */
+    .product-title {
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--kfc-dark);
+        font-size: 2.5rem;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+    }
+
+    .category-badge {
+        background-color: #f0f0f0;
+        color: var(--kfc-dark);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 6px 15px;
+        border-radius: 30px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .product-description {
+        font-size: 1.05rem;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    /* Action Card (Price & Form) */
+    .action-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 1px solid #eee;
+    }
+
+    .price-display {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--kfc-red);
+        line-height: 1;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .form-control-qty {
+        border-radius: 50px;
+        padding: 12px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-align: center;
+        border: 2px solid #eee;
+        color: var(--kfc-dark);
+    }
+
+        .form-control-qty:focus {
+            border-color: var(--kfc-red);
+            box-shadow: none;
+        }
+
+    .btn-kfc-cart {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 14px;
+        width: 100%;
+        border: none;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(228, 0, 43, 0.4);
+        transition: all 0.3s;
+    }
+
+        .btn-kfc-cart:hover {
+            background-color: #c40024;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(228, 0, 43, 0.5);
+            color: white;
+        }
+
+    .btn-back {
+        color: #888;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        margin-top: 1rem;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            color: var(--kfc-red);
+            transform: translateX(-5px);
+        }
+
+    .tag-item {
+        color: var(--kfc-red);
+        font-weight: 600;
+        background: #fff0f3;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-right: 5px;
+    }
+</style>
+
+<div class="container mt-3 fade-in-up mb-5">
+    @* --- Breadcrumb --- *@
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">TRANG CHỦ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Foods" asp-action="Index">THỰC ĐƠN</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name.ToUpper()</li>
+        </ol>
+    </nav>
+
+    <div class="row align-items-center g-5">
+        @* --- Cột Trái: Hình Ảnh --- *@
+        <div class="col-lg-6">
+            <div class="product-image-container">
+                <img src="@Model.ImageUrl" alt="@Model.Name" />
+            </div>
+        </div>
+
+        @* --- Cột Phải: Thông tin & Đặt hàng --- *@
+        <div class="col-lg-6">
+            <div class="ps-lg-4">
+                @* Category *@
+                <span class="category-badge">
+                    @Model.Category?.Name
+                </span>
+
+                @* Title *@
+                <h1 class="product-title">@Model.Name</h1>
+
+                @* Tags *@
+                @if (!string.IsNullOrEmpty(Model.Tag))
+                {
+                    <div class="mb-3">
+                        <span class="tag-item"><i class="bi bi-hash"></i>@Model.Tag</span>
+                    </div>
+                }
+
+                @* Description *@
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="product-description">@Model.Description</p>
+                }
+                else
+                {
+                    <p class="product-description fst-italic text-muted">Đang cập nhật mô tả...</p>
+                }
+
+                @* --- ACTION CARD --- *@
+                <div class="action-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-uppercase fw-bold text-muted small ls-1">Giá bán</span>
+                    </div>
+
+                    <span class="price-display">@Model.Price.ToString("N0") ₫</span>
+
+                    @if (Model.IsActive)
+                    {
+                        <form asp-controller="Order" asp-action="AddFoodToCart" method="post">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <div class="row g-3">
+                                <div class="col-4">
+                                    <input type="number" name="quantity" value="1" min="1" max="50" class="form-control form-control-qty" title="Số lượng" />
+                                </div>
+                                <div class="col-8">
+                                    <button type="submit" class="btn btn-kfc-cart">
+                                        <i class="bi bi-bag-plus-fill me-2"></i> THÊM NGAY
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary d-flex align-items-center rounded-3 border-0" role="alert">
+                            <i class="bi bi-exclamation-circle-fill fs-4 me-3"></i>
+                            <div>
+                                <strong>Tạm ngưng phục vụ</strong> <br>
+                                Món này hiện chưa có sẵn. Vui lòng quay lại sau!
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @* Back Button *@
+                <a asp-controller="Foods" asp-action="Index" class="btn-back mt-4">
+                    <i class="bi bi-arrow-left me-2"></i> Quay lại thực đơn
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

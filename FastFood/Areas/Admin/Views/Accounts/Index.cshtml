@@ -1,0 +1,258 @@
+@model IEnumerable<FastFoodOnline.Models.Account>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Page Header */
+    .page-header h2 {
+        color: var(--kfc-dark);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    /* Card & Table Container */
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+    }
+
+    .table-toolbar {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* Table Styles */
+    .admin-table thead th {
+        background-color: #fcfcfc;
+        color: #888;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-bottom: 2px solid #eee;
+        padding: 15px 20px;
+        letter-spacing: 0.5px;
+    }
+
+    .admin-table tbody td {
+        padding: 15px 20px;
+        vertical-align: middle;
+        border-bottom: 1px dashed #eee;
+        color: #444;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .admin-table tbody tr:hover {
+        background-color: #fffbfc; /* Màu hồng cực nhạt khi hover */
+    }
+
+    /* Avatar Circle */
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #f0f2f5;
+        color: #666;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        margin-right: 12px;
+    }
+
+    /* Badges (Soft Style) */
+    .badge-soft {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .badge-soft-primary {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+    /* Khách hàng */
+    .badge-soft-danger {
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+    }
+    /* Admin */
+
+    /* Buttons */
+    .btn-add-new {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-weight: 700;
+        border: none;
+        box-shadow: 0 4px 10px rgba(228, 0, 43, 0.2);
+        transition: all 0.2s;
+    }
+
+        .btn-add-new:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex; /* Quan trọng: dùng inline-flex để căn giữa icon */
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        transition: all 0.2s;
+        background-color: transparent;
+        border: 1px solid transparent;
+        margin-left: 5px; /* Thêm khoảng cách giữa các nút */
+        text-decoration: none; /* Xóa gạch chân mặc định của thẻ a */
+    }
+
+        /* Loại bỏ margin cho nút đầu tiên để căn lề phải chuẩn */
+        .action-btn:first-child {
+            margin-left: 0;
+        }
+
+        .action-btn i {
+            font-size: 1rem; /* Đảm bảo kích thước icon chuẩn */
+            line-height: 1; /* Reset line-height để icon đứng giữa */
+        }
+
+        .action-btn:hover {
+            background-color: #f0f0f0;
+            color: var(--kfc-red);
+        }
+
+        .action-btn.btn-delete:hover {
+            background-color: #fff0f3;
+            color: #dc3545;
+            border-color: #ffccd5;
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+        <div>
+            <h2 class="mb-1">Tài khoản</h2>
+            <p class="text-muted mb-0">Quản lý danh sách người dùng và phân quyền.</p>
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-add-new">
+            <i class="bi bi-plus-lg me-1"></i> Thêm mới
+        </a>
+    </div>
+
+    <div class="table-card">
+        <div class="table-toolbar">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 fw-bold text-uppercase text-dark border-start border-4 border-danger ps-3">Danh sách</h5>
+            </div>
+            <div class="d-flex">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control bg-light border-start-0" placeholder="Tìm kiếm tài khoản..." style="max-width: 250px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Họ và tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Vai trò</th>
+                        <th>Địa chỉ</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var account in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-muted">#@account.Id</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark">@account.FullName</span>
+                                </div>
+                            </td>
+                            <td>@account.Email</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(account.PhoneNumber))
+                                {
+                                    <span>@account.PhoneNumber</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic small">--</span>
+                                }
+                            </td>
+                            <td>
+                                @if (account.RoleId == 1)
+                                {
+                                    <span class="badge badge-soft badge-soft-danger">
+                                        <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft badge-soft-primary">User</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="d-inline-block text-truncate" style="max-width: 150px;" title="@account.Address">
+                                    @(string.IsNullOrEmpty(account.Address) ? "--" : account.Address)
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="@Url.Action("Details", new { id = account.Id })" class="action-btn" title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="@Url.Action("Edit", new { id = account.Id })" class="action-btn" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="@Url.Action("Delete", new { id = account.Id })" class="action-btn btn-delete" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?');">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 border-top bg-light d-flex justify-content-end">
+            <small class="text-muted">Hiển thị @Model.Count() tài khoản</small>
+        </div>
+    </div>
+</div>

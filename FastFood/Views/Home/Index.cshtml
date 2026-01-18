@@ -1,0 +1,293 @@
+@model FastFoodOnline.Models.HomeViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+@* --- PHẦN CSS TÙY CHỈNH THEO VIBE KFC --- *@
+<style>
+    :root {
+        --kfc-red: #E4002B; /* Màu đỏ thương hiệu */
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Hero Section - Banner lớn */
+    .kfc-hero {
+        background: linear-gradient(135deg, var(--kfc-red) 0%, #c40024 100%);
+        color: white;
+        border-radius: 1.5rem;
+        padding: 4rem 2rem;
+        box-shadow: var(--kfc-shadow);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+
+        .kfc-hero h1 {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+    .btn-hero {
+        background-color: white;
+        color: var(--kfc-red);
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 30px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+        .btn-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            background-color: #fff;
+            color: var(--kfc-red);
+        }
+
+    /* Section Headers */
+    .section-title {
+        font-weight: 800;
+        color: var(--kfc-dark);
+        text-transform: uppercase;
+        border-left: 5px solid var(--kfc-red);
+        padding-left: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Product Cards */
+    .kfc-card {
+        border: none;
+        border-radius: 16px;
+        background: white;
+        transition: all 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+        .kfc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(228, 0, 43, 0.15); /* Shadow đỏ nhẹ khi hover */
+        }
+
+    .kfc-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 220px; /* Chiều cao cố định cho ảnh */
+    }
+
+        .kfc-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    .kfc-card:hover .kfc-img-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .kfc-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: bold;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--kfc-dark);
+    }
+
+    .kfc-price {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--kfc-red);
+        margin: 10px 0;
+        display: block;
+    }
+
+    /* Buttons inside card */
+    .btn-kfc-primary {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        font-weight: 600;
+        border: 2px solid var(--kfc-red);
+        transition: all 0.2s;
+    }
+
+        .btn-kfc-primary:hover {
+            background-color: #be0024;
+            border-color: #be0024;
+            color: white;
+        }
+
+    .btn-kfc-outline {
+        background-color: transparent;
+        color: var(--kfc-red);
+        border: 2px solid var(--kfc-red);
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .btn-kfc-outline:hover {
+            background-color: var(--kfc-red);
+            color: white;
+        }
+
+    .text-truncate-multi {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 48px; /* Giữ khung đều nhau */
+    }
+</style>
+
+@* --- HERO SECTION --- *@
+<div class="container mt-4">
+    <div class="kfc-hero text-center fade-in-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1>Vị ngon trên từng ngón tay</h1>
+                <p class="lead mt-3 mb-4" style="font-weight: 500; opacity: 0.9;">
+                    Đặt món ngay để thưởng thức hương vị Gà Rán, Burger và Combo đỉnh cao nóng hổi giao tận nơi!
+                </p>
+                <a class="btn btn-hero btn-lg" asp-controller="Foods" asp-action="Index">
+                    ĐẶT NGAY &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @* --- MÓN ĂN NỔI BẬT --- *@
+    <div class="row mb-4 align-items-center">
+        <div class="col-12">
+            <h2 class="section-title fade-in-up">MÓN ĂN NỔI BẬT</h2>
+        </div>
+    </div>
+
+    @if (Model.PopularFoods.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            @foreach (var food in Model.PopularFoods)
+            {
+                <div class="col fade-in-up">
+                    <div class="kfc-card h-100">
+                        <div class="kfc-img-wrapper">
+                            <span class="kfc-badge">@food.Category?.Name</span>
+                            <img src="@food.ImageUrl" alt="@food.Name" />
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">@food.Name</h5>
+                            <p class="card-text text-muted small text-truncate-multi">
+                                @food.Description
+                            </p>
+                            <div class="mt-auto">
+                                <span class="kfc-price">@food.Price.ToString("N0") ₫</span>
+                                <div class="d-grid gap-2">
+                                    <form asp-controller="Order" asp-action="AddFoodToCart" method="post" class="d-grid">
+                                        <input type="hidden" name="id" value="@food.Id" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-kfc-primary btn-sm py-2">
+                                            THÊM VÀO GIỎ
+                                        </button>
+                                    </form>
+                                    <a asp-controller="Foods" asp-action="Details" asp-route-id="@food.Id" class="btn btn-kfc-outline btn-sm py-2">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-light text-center shadow-sm rounded-pill p-4">
+            <span class="text-muted fw-bold">Hiện chưa có món ăn nổi bật nào. Hãy quay lại sau nhé!</span>
+        </div>
+    }
+
+    @* --- COMBO ƯU ĐÃI --- *@
+    <div class="row mb-4 mt-5">
+        <div class="col-12">
+            <h2 class="section-title fade-in-up">COMBO ƯU ĐÃI HOT</h2>
+        </div>
+    </div>
+
+    @if (Model.Combos.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            @foreach (var combo in Model.Combos)
+            {
+                <div class="col fade-in-up">
+                    <div class="kfc-card h-100">
+                        <div class="kfc-img-wrapper" style="height: 250px;">
+                            <span class="kfc-badge" style="background-color: #ff9f00;">BEST SELLER</span>
+                            <img src="@combo.ImageUrl" alt="@combo.Name" />
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@combo.Name</h5>
+                            <p class="card-text text-muted small text-truncate-multi">
+                                @combo.Description
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <span class="kfc-price mb-0">@combo.Price.ToString("N0") ₫</span>
+                                    <small class="text-danger fw-bold">Tiết kiệm hơn!</small>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <form asp-controller="Order" asp-action="AddComboToCart" method="post" class="d-grid">
+                                        <input type="hidden" name="id" value="@combo.Id" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-kfc-primary py-2">
+                                            ĐẶT COMBO NGAY
+                                        </button>
+                                    </form>
+                                    <a asp-controller="Combos" asp-action="Details" asp-route-id="@combo.Id" class="btn btn-kfc-outline py-2">
+                                        Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-light text-center shadow-sm rounded-pill p-4">
+            <span class="text-muted fw-bold">Hiện chưa có Combo nào.</span>
+        </div>
+    }
+</div>

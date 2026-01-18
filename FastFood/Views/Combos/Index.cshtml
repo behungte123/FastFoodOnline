@@ -1,0 +1,247 @@
+@model IEnumerable<FastFoodOnline.Models.Combo>
+@{
+    ViewData["Title"] = "Combo ưu đãi";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-orange: #ff9f00;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Header Section */
+    .menu-header {
+        position: relative;
+        margin-bottom: 3rem;
+        text-align: center;
+        padding-top: 1rem;
+    }
+
+    .menu-header h1 {
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--kfc-dark);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+
+    .menu-header::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 5px;
+        background-color: var(--kfc-red);
+        margin: 15px auto;
+        border-radius: 2px;
+    }
+
+    /* Combo Card */
+    .kfc-card {
+        border: none;
+        border-radius: 16px;
+        background: white;
+        transition: all 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kfc-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(228, 0, 43, 0.15);
+    }
+
+    .kfc-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 260px; /* Cao hơn món lẻ một chút */
+        background-color: #fff;
+    }
+
+    .kfc-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .kfc-card:hover .kfc-img-wrapper img {
+        transform: scale(1.08);
+    }
+
+    /* Badges */
+    .combo-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: var(--kfc-orange);
+        color: white;
+        font-weight: 800;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 2;
+        text-transform: uppercase;
+    }
+    
+    .save-badge {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        background: rgba(255,255,255,0.9);
+        color: var(--kfc-red);
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-weight: 800;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        color: var(--kfc-dark);
+        line-height: 1.2;
+    }
+
+    .kfc-price {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--kfc-red);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Buttons */
+    .btn-kfc-add {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+    
+    .btn-kfc-add:hover {
+        background-color: #be0024;
+        color: white;
+        box-shadow: 0 4px 12px rgba(228, 0, 43, 0.3);
+    }
+
+    .btn-kfc-view {
+        background-color: transparent;
+        color: var(--kfc-red);
+        border: 2px solid #eee;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .btn-kfc-view:hover {
+        border-color: var(--kfc-red);
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+    }
+</style>
+
+<div class="container mt-4 fade-in-up">
+    @* --- HEADER --- *@
+    <div class="menu-header">
+        <h1>Combo Ưu Đãi</h1>
+        <p class="text-muted fs-5">Ăn ngon hơn - Tiết kiệm hơn cùng bạn bè & gia đình!</p>
+    </div>
+
+    @* --- LIST --- *@
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-box-seam" style="font-size: 4rem; color: #ddd;"></i>
+            </div>
+            <h4 class="text-muted fw-bold">Hiện chưa có Combo nào.</h4>
+            <p class="text-muted mb-4">Chúng tôi đang cập nhật các ưu đãi mới nhất. Vui lòng quay lại sau nhé!</p>
+            <a asp-controller="Foods" asp-action="Index" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
+                &larr; XEM MÓN LẺ
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <p class="text-muted fw-bold mb-0">
+                <i class="bi bi-stars text-warning me-1"></i> Đang có @Model.Count() deal hot dành cho bạn
+            </p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+            @foreach (var combo in Model)
+            {
+                <div class="col fade-in-up">
+                    <div class="kfc-card h-100">
+                        <div class="kfc-img-wrapper">
+                            <span class="combo-badge">
+                                <i class="bi bi-lightning-fill me-1"></i> HOT DEAL
+                            </span>
+                            <span class="save-badge">Tiết kiệm siêu hời</span>
+                            <img src="@combo.ImageUrl" alt="@combo.Name" />
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">@combo.Name</h5>
+                            <p class="card-text text-muted small flex-grow-1" style="line-height: 1.6;">
+                                @if (!string.IsNullOrEmpty(combo.Description))
+                                {
+                                    @(combo.Description.Length > 90 ? combo.Description.Substring(0, 90) + "..." : combo.Description)
+                                }
+                            </p>
+                            
+                            <div class="mt-auto pt-3 border-top">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted small fw-bold text-uppercase">Giá combo</span>
+                                    <span class="kfc-price mb-0">@combo.Price.ToString("N0") ₫</span>
+                                </div>
+                                
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        <form asp-controller="Order" asp-action="AddComboToCart" method="post">
+                                            <input type="hidden" name="id" value="@combo.Id" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <button type="submit" class="btn btn-kfc-add w-100 py-2">
+                                                <i class="bi bi-cart-plus me-1"></i> Đặt Ngay
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col-4">
+                                        <a asp-action="Details" asp-route-id="@combo.Id" class="btn btn-kfc-view w-100 py-2">
+                                            Xem
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,296 @@
+@model IEnumerable<FastFoodOnline.Models.Order>
+
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Page Header */
+    .page-header h2 {
+        color: var(--kfc-dark);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+
+    .filter-tab {
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #666;
+        background-color: white;
+        border: 1px solid #eee;
+        transition: all 0.2s;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .filter-tab:hover {
+            background-color: #f8f9fa;
+            color: var(--kfc-dark);
+        }
+
+        .filter-tab.active {
+            background-color: var(--kfc-dark);
+            color: white;
+            border-color: var(--kfc-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+            /* Specific colors for active tabs if needed */
+            .filter-tab.active[href*="Pending"] {
+                background-color: #ffc107;
+                border-color: #ffc107;
+                color: #000;
+            }
+
+            .filter-tab.active[href*="Processing"] {
+                background-color: #17a2b8;
+                border-color: #17a2b8;
+            }
+
+            .filter-tab.active[href*="Completed"] {
+                background-color: #28a745;
+                border-color: #28a745;
+            }
+
+            .filter-tab.active[href*="Cancelled"] {
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+
+
+    /* Table Card */
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+    }
+
+    .admin-table thead th {
+        background-color: #fcfcfc;
+        color: #888;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-bottom: 2px solid #eee;
+        padding: 15px 20px;
+        letter-spacing: 0.5px;
+    }
+
+    .admin-table tbody td {
+        padding: 15px 20px;
+        vertical-align: middle;
+        border-bottom: 1px dashed #eee;
+        color: #444;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .admin-table tbody tr:hover {
+        background-color: #fffbfc;
+    }
+
+    /* Badges */
+    .badge-soft {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .badge-soft-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-soft-info {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    .badge-soft-success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .badge-soft-danger {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    /* Action Button */
+    .btn-detail {
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+        border: 1px solid transparent;
+        padding: 6px 15px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-detail:hover {
+            background-color: var(--kfc-red);
+            color: white;
+        }
+
+    .btn-delete-icon {
+        color: #999;
+        font-size: 1.1rem;
+        margin-left: 10px;
+        transition: color 0.2s;
+    }
+
+        .btn-delete-icon:hover {
+            color: #dc3545;
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+        <div>
+            <h2 class="mb-1">Đơn hàng</h2>
+            <p class="text-muted mb-0">Quản lý và theo dõi trạng thái các đơn hàng.</p>
+        </div>
+    </div>
+
+    <div class="filter-tabs">
+        <a href="@Url.Action("Index")" class="filter-tab @(string.IsNullOrEmpty(ViewBag.SelectedStatus) ? "active" : "")">
+            Tất cả
+        </a>
+        <a href="@Url.Action("Index", new { status = "Pending" })" class="filter-tab @(ViewBag.SelectedStatus == "Pending" ? "active" : "")">
+            ⏳ Chờ xử lý
+        </a>
+        <a href="@Url.Action("Index", new { status = "Processing" })" class="filter-tab @(ViewBag.SelectedStatus == "Processing" ? "active" : "")">
+            ⚙️ Đang xử lý
+        </a>
+        <a href="@Url.Action("Index", new { status = "Completed" })" class="filter-tab @(ViewBag.SelectedStatus == "Completed" ? "active" : "")">
+            ✅ Hoàn thành
+        </a>
+        <a href="@Url.Action("Index", new { status = "Cancelled" })" class="filter-tab @(ViewBag.SelectedStatus == "Cancelled" ? "active" : "")">
+            ❌ Đã hủy
+        </a>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Email</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="fw-bold text-dark">#@order.Id</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2 text-muted" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <span class="fw-semibold">@order.Account?.FullName</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted small">@order.Account?.Email</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-dark" style="font-size: 0.85rem;">@order.OrderDate.ToString("dd/MM/yyyy")</span>
+                                        <span class="text-muted small">@order.OrderDate.ToString("HH:mm")</span>
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-danger">@order.TotalAmount.ToString("N0") đ</td>
+                                <td>
+                                    @if (order.Status == "Pending")
+                                    {
+                                        <span class="badge badge-soft badge-soft-warning">Chờ xử lý</span>
+                                    }
+                                    else if (order.Status == "Processing")
+                                    {
+                                        <span class="badge badge-soft badge-soft-info">Đang làm</span>
+                                    }
+                                    else if (order.Status == "Completed")
+                                    {
+                                        <span class="badge badge-soft badge-soft-success">Hoàn thành</span>
+                                    }
+                                    else if (order.Status == "Cancelled")
+                                    {
+                                        <span class="badge badge-soft badge-soft-danger">Đã hủy</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-dark">@order.Status</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <a href="@Url.Action("Details", new { id = order.Id })" class="btn-detail">
+                                            Chi tiết
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = order.Id })" class="btn-delete-icon" title="Xóa đơn hàng" onclick="return confirm('Bạn có chắc muốn xóa đơn hàng này?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="opacity-25 mb-3">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                </div>
+                                <h6 class="text-muted">Không tìm thấy đơn hàng nào</h6>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 border-top bg-light d-flex justify-content-end">
+            <small class="text-muted">Hiển thị @Model.Count() đơn hàng</small>
+        </div>
+    </div>
+</div>

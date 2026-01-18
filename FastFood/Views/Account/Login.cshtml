@@ -1,0 +1,279 @@
+@model FastFoodOnline.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--kfc-shadow);
+        width: 100%;
+        max-width: 450px;
+        overflow: hidden;
+        position: relative;
+        /* Tạo viền đỏ trên đầu giống hộp gà KFC */
+        border-top: 8px solid var(--kfc-red);
+    }
+
+    .login-header {
+        text-align: center;
+        padding: 40px 30px 20px;
+    }
+
+        .login-header h1 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+    /* Form Styles */
+    .login-body {
+        padding: 0 30px 40px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--kfc-dark);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+    .form-control {
+        border-radius: 50px; /* Bo tròn kiểu viên thuốc */
+        padding: 12px 20px;
+        border: 2px solid #eee;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background-color: #fafafa;
+    }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: var(--kfc-red);
+            box-shadow: 0 0 0 4px rgba(228, 0, 43, 0.1); /* Glow màu đỏ nhẹ */
+        }
+
+    /* Checkbox Style */
+    .form-check {
+        padding-left: 2rem;
+        margin-bottom: 25px;
+    }
+
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.15em;
+        border: 2px solid #ccc;
+        cursor: pointer;
+    }
+
+        .form-check-input:checked {
+            background-color: var(--kfc-red);
+            border-color: var(--kfc-red);
+        }
+
+    /* Buttons */
+    .btn-login {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        width: 100%;
+        padding: 14px;
+        border-radius: 50px;
+        border: none;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(228, 0, 43, 0.3);
+    }
+
+        .btn-login:hover {
+            background-color: #be0024;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(228, 0, 43, 0.4);
+        }
+
+    /* --- CSS CHO NÚT GOOGLE (MỚI) --- */
+    .or-separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+        color: #999;
+        font-size: 0.9rem;
+    }
+
+        .or-separator::before, .or-separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #eee;
+        }
+
+        .or-separator::before {
+            margin-right: 10px;
+        }
+
+        .or-separator::after {
+            margin-left: 10px;
+        }
+
+    .btn-google {
+        background-color: #fff;
+        color: #333;
+        width: 100%;
+        padding: 12px;
+        border-radius: 50px;
+        border: 2px solid #eee;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            border-color: #ddd;
+            color: #000;
+            transform: translateY(-1px);
+        }
+
+    .google-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+        .login-footer a {
+            color: var(--kfc-red);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+            .login-footer a:hover {
+                text-decoration: underline;
+            }
+
+    /* Animation */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card fade-in-up">
+
+        <div class="login-header">
+            <h1>Đăng nhập</h1>
+            <p>Chào mừng trở lại! Hãy bắt đầu bữa ăn ngon của bạn.</p>
+        </div>
+
+        <div class="login-body">
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" class="form-control" placeholder="Nhập email của bạn..." />
+                    <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password">Mật khẩu</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label text-muted">
+                        Ghi nhớ đăng nhập
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-login">
+                    ĐĂNG NHẬP NGAY
+                </button>
+            </form>
+
+            <div class="or-separator">HOẶC</div>
+
+            <a asp-controller="Account" asp-action="LoginByGoogle" class="btn btn-google">
+                <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.84z" fill="#FBBC05" />
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                </svg>
+                Tiếp tục với Google
+            </a>
+
+            <div class="login-footer">
+                <p class="mb-0 text-muted">
+                    Bạn chưa có tài khoản?
+                    <a asp-action="Register">Đăng ký thành viên</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

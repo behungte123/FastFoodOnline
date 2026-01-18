@@ -1,0 +1,347 @@
+@model FastFoodOnline.Models.Combo
+
+@{
+    ViewData["Title"] = "Chi tiết Combo";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-success: #28a745;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Card Wrapper */
+    .kfc-detail-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    /* Left Column: Image & Status */
+    .combo-visual-wrapper {
+        background-color: #fff;
+        height: 100%;
+        padding: 30px;
+        border-right: 1px solid #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .combo-image-box {
+        width: 100%;
+        height: 300px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .combo-image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .combo-image-box:hover img {
+        transform: scale(1.05);
+    }
+
+    /* Right Column: Info */
+    .combo-content {
+        padding: 40px;
+    }
+
+    .combo-title {
+        font-weight: 900;
+        color: var(--kfc-dark);
+        font-size: 2rem;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        line-height: 1.2;
+    }
+
+    .combo-id {
+        font-size: 0.9rem;
+        color: #999;
+        margin-bottom: 20px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    /* Description Box */
+    .description-box {
+        background-color: #f9f9f9;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: #555;
+        font-style: italic;
+        margin-bottom: 25px;
+        border-left: 4px solid var(--kfc-red);
+    }
+
+    /* Items Table */
+    .combo-items-table thead th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #888;
+        background-color: #fcfcfc;
+        border-top: none;
+    }
+
+    .combo-items-table td {
+        vertical-align: middle;
+        padding: 12px;
+    }
+
+    /* Financial Summary */
+    .financial-box {
+        background-color: #fff3cd;
+        border: 1px dashed #ffc107;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .financial-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .savings-highlight {
+        color: var(--kfc-success);
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    /* Badges */
+    .badge-soft {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+    .badge-soft-success { background-color: #d1e7dd; color: #0f5132; }
+    .badge-soft-secondary { background-color: #e2e3e5; color: #41464b; }
+
+    /* Buttons */
+    .action-bar {
+        margin-top: 30px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .btn-edit {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-edit:hover {
+        background-color: #c40024;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-back {
+        background-color: #f0f0f0;
+        color: #666;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: 700;
+        border: none;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+        background-color: #e0e0e0;
+        color: var(--kfc-dark);
+    }
+
+    .btn-delete-link {
+        color: #dc3545;
+        font-weight: 600;
+        text-decoration: underline;
+        margin-left: auto;
+        transition: color 0.2s;
+    }
+    
+    .btn-delete-link:hover {
+        color: #a71d2a;
+    }
+</style>
+
+<div class="container-fluid fade-in-up mb-5">
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index")" class="text-decoration-none text-muted">Sản phẩm</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Combos")" class="text-decoration-none text-muted">Combo</a></li>
+                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Chi tiết</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="kfc-detail-card">
+        <div class="row g-0">
+            <div class="col-lg-4">
+                <div class="combo-visual-wrapper">
+                    <div class="combo-image-box">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="@Model.Name" />
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">
+                                <i class="bi bi-image fs-1"></i>
+                                <p class="mb-0">Không có ảnh</p>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="w-100 mt-2">
+                        <label class="small text-uppercase fw-bold text-muted mb-2">Trạng thái kinh doanh</label>
+                        <div class="mb-3">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge badge-soft badge-soft-success w-100 py-2">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Đang bán
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft badge-soft-secondary w-100 py-2">
+                                    <i class="bi bi-pause-circle-fill me-1"></i> Ngừng bán
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="combo-content">
+                    <div class="combo-id">ID: #@Model.Id</div>
+                    <h1 class="combo-title">@Model.Name</h1>
+
+                    <div class="description-box">
+                        @(string.IsNullOrEmpty(Model.Description) ? "Không có mô tả." : Model.Description)
+                    </div>
+
+                    <h6 class="text-uppercase text-muted fw-bold mb-3 small ls-1">Thành phần Combo</h6>
+                    
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        decimal totalOriginal = 0;
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover combo-items-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Món ăn</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end">Đơn giá lẻ</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        if (item.Food != null)
+                                        {
+                                            var itemTotal = item.Food.Price * item.Quantity;
+                                            totalOriginal += itemTotal;
+                                            <tr>
+                                                <td class="fw-bold text-dark">@item.Food.Name</td>
+                                                <td class="text-center">x @item.Quantity</td>
+                                                <td class="text-end text-muted">@item.Food.Price.ToString("N0")</td>
+                                                <td class="text-end">@itemTotal.ToString("N0")</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="financial-box">
+                            <div class="row">
+                                <div class="col-md-7 border-end border-warning">
+                                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-calculator me-2"></i> Bài toán hiệu quả</h6>
+                                    <div class="financial-row">
+                                        <span>Tổng giá trị thực tế (bán lẻ):</span>
+                                        <span class="text-decoration-line-through text-muted">@totalOriginal.ToString("N0") đ</span>
+                                    </div>
+                                    <div class="financial-row">
+                                        <span>Giá bán Combo:</span>
+                                        <span class="fw-bold text-danger fs-5">@Model.Price.ToString("N0") đ</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 d-flex flex-column justify-content-center align-items-center ps-4">
+                                    <span class="small text-uppercase fw-bold text-success mb-1">Khách tiết kiệm được</span>
+                                    @if(totalOriginal > Model.Price)
+                                    {
+                                        <span class="savings-highlight">
+                                            @((totalOriginal - Model.Price).ToString("N0")) đ
+                                        </span>
+                                        <span class="badge bg-success mt-2">
+                                            -@(((totalOriginal - Model.Price) / totalOriginal * 100).ToString("F1"))%
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fw-bold">0 đ (0%)</span>
+                                        <small class="text-danger mt-1 fst-italic">*Cảnh báo: Giá combo đang cao hơn hoặc bằng giá lẻ</small>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i> Combo này chưa có món ăn nào.
+                        </div>
+                    }
+
+                    <div class="action-bar">
+                        <a asp-action="EditCombo" asp-route-id="@Model.Id" class="btn-edit">
+                            <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa
+                        </a>
+                        <a asp-action="Combos" class="btn-back">
+                            Quay lại
+                        </a>
+                        <a asp-action="DeleteCombo" asp-route-id="@Model.Id" class="btn-delete-link">
+                            <i class="bi bi-trash"></i> Xóa Combo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,304 @@
+@model FastFoodOnline.Models.Account
+
+@{
+    ViewData["Title"] = "Chi tiết hồ sơ";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Container */
+    .profile-wrapper {
+        display: flex;
+        justify-content: center;
+        padding-top: 2rem;
+    }
+
+    /* Card Hồ sơ */
+    .kfc-profile-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: none;
+        overflow: hidden;
+        width: 100%;
+        max-width: 700px;
+        position: relative;
+    }
+
+        /* Thanh màu trang trí trên cùng */
+        .kfc-profile-card::before {
+            content: '';
+            display: block;
+            height: 120px;
+            background: linear-gradient(135deg, var(--kfc-red) 0%, #c40024 100%);
+            width: 100%;
+        }
+
+    .card-content {
+        padding: 0 40px 40px;
+        position: relative;
+    }
+
+    /* Avatar */
+    .avatar-wrapper {
+        width: 120px;
+        height: 120px;
+        background-color: white;
+        border-radius: 50%;
+        padding: 5px;
+        position: absolute;
+        top: -60px; /* Đẩy lên đè vào phần banner đỏ */
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .avatar-inner {
+        width: 100%;
+        height: 100%;
+        background-color: #f0f2f5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        color: #999;
+    }
+
+    /* Header Info */
+    .profile-header {
+        margin-top: 70px; /* Bù khoảng trống cho avatar */
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .user-name {
+        font-weight: 800;
+        color: var(--kfc-dark);
+        font-size: 1.75rem;
+        margin-bottom: 5px;
+    }
+
+    .user-id {
+        color: #999;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    /* Badges */
+    .badge-soft {
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .badge-soft-primary {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+
+    .badge-soft-danger {
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+    }
+
+    /* Info Grid */
+    .info-group {
+        margin-bottom: 20px;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 700;
+        margin-bottom: 5px;
+        display: block;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--kfc-dark);
+        display: flex;
+        align-items: center;
+    }
+
+    .info-icon {
+        color: var(--kfc-red);
+        margin-right: 8px;
+        font-size: 1.1rem;
+    }
+
+    /* Buttons */
+    .action-bar {
+        border-top: 1px dashed #eee;
+        padding-top: 25px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .btn-edit {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-edit:hover {
+            background-color: #c40024;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(228, 0, 43, 0.2);
+        }
+
+    .btn-delete {
+        background-color: white;
+        color: #dc3545;
+        border: 2px solid #f8d7da;
+        border-radius: 50px;
+        padding: 8px 25px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-delete:hover {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+    .btn-back-link {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: rgba(255,255,255,0.8);
+        font-weight: 600;
+        text-decoration: none;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        background: rgba(0,0,0,0.1);
+        padding: 5px 15px;
+        border-radius: 20px;
+        transition: all 0.2s;
+    }
+
+        .btn-back-link:hover {
+            background: rgba(0,0,0,0.2);
+            color: white;
+        }
+</style>
+
+<div class="profile-wrapper fade-in-up">
+    <div class="kfc-profile-card">
+        <a asp-action="Index" class="btn-back-link">
+            <i class="bi bi-arrow-left me-2"></i> Danh sách
+        </a>
+
+        <div class="avatar-wrapper">
+            <div class="avatar-inner">
+                <i class="bi bi-person-fill"></i>
+            </div>
+        </div>
+
+        <div class="card-content">
+            <div class="profile-header">
+                <h1 class="user-name">@Model.FullName</h1>
+                <div class="user-id">ID: #@Model.Id</div>
+
+                @if (Model.RoleId == 1)
+                {
+                    <span class="badge-soft badge-soft-danger">
+                        <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                    </span>
+                }
+                else
+                {
+                    <span class="badge-soft badge-soft-primary">
+                        <i class="bi bi-person-fill me-1"></i> Khách hàng
+                    </span>
+                }
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="info-group">
+                        <span class="info-label">Email đăng nhập</span>
+                        <div class="info-value">
+                            <i class="bi bi-envelope info-icon"></i> @Model.Email
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-group">
+                        <span class="info-label">Số điện thoại</span>
+                        <div class="info-value">
+                            <i class="bi bi-telephone info-icon"></i>
+                            @(string.IsNullOrEmpty(Model.PhoneNumber) ? "Chưa cập nhật" : Model.PhoneNumber)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-group">
+                        <span class="info-label">Ngày sinh</span>
+                        <div class="info-value">
+                            <i class="bi bi-cake2 info-icon"></i>
+                            @(Model.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="info-group">
+                        <span class="info-label">Địa chỉ liên hệ</span>
+                        <div class="info-value">
+                            <i class="bi bi-geo-alt info-icon"></i>
+                            @(string.IsNullOrEmpty(Model.Address) ? "Chưa có địa chỉ" : Model.Address)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit">
+                    <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn-delete">
+                    <i class="bi bi-trash me-2"></i> Xóa tài khoản
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

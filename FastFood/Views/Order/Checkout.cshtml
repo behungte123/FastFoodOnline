@@ -1,0 +1,306 @@
+@model List<FastFoodOnline.Models.CartItem>
+@{
+    ViewData["Title"] = "Thanh toán";
+    var cartTotal = (decimal)ViewBag.CartTotal;
+    var userName = (string)ViewBag.UserName;
+
+    // Logic phí ship
+    decimal shippingFee = cartTotal >= 100000 ? 0 : 20000;
+    decimal finalTotal = cartTotal + shippingFee;
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Checkout Header */
+    .checkout-header {
+        margin-bottom: 2rem;
+    }
+
+        .checkout-header h1 {
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--kfc-dark);
+        }
+
+    /* Cards */
+    .kfc-checkout-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .kfc-card-header {
+        background-color: white;
+        padding: 20px 25px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+        .kfc-card-header h5 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            border-left: 5px solid var(--kfc-red);
+            padding-left: 15px;
+            letter-spacing: 0.5px;
+        }
+
+    /* Form Elements */
+    .form-label {
+        font-weight: 600;
+        color: var(--kfc-dark);
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #dee2e6;
+        background-color: #fcfcfc;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--kfc-red);
+            box-shadow: 0 0 0 0.2rem rgba(228, 0, 43, 0.15);
+            background-color: #fff;
+        }
+
+        .form-control[readonly] {
+            background-color: #e9ecef;
+            border-color: #eee;
+            color: #666;
+        }
+
+    /* Payment Method Box */
+    .payment-option {
+        border: 2px solid var(--kfc-red);
+        background-color: #fff0f3;
+        border-radius: 10px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        color: var(--kfc-red);
+        font-weight: 700;
+    }
+
+    /* Receipt Style (Right Column) */
+    .receipt-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px dashed #e0e0e0;
+    }
+
+        .receipt-item:last-child {
+            border-bottom: none;
+        }
+
+    .receipt-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 1px solid #eee;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px dashed #bbb;
+    }
+
+    .final-price {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--kfc-red);
+    }
+
+    /* Buttons */
+    .btn-place-order {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 16px;
+        width: 100%;
+        border: none;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(228, 0, 43, 0.4);
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+
+        .btn-place-order:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(228, 0, 43, 0.5);
+            color: white;
+        }
+</style>
+
+<div class="container mt-4 fade-in-up mb-5">
+    <div class="checkout-header">
+        <h1><i class="bi bi-credit-card-2-front text-danger me-2"></i> Xác nhận đơn hàng</h1>
+        <p class="text-muted">Chỉ còn một bước nữa thôi, món ngon sẽ được giao đến bạn!</p>
+    </div>
+
+    <div class="row g-4">
+        @* --- LEFT COL: DELIVERY INFO --- *@
+        <div class="col-lg-7">
+            <form asp-action="ProcessCheckout" method="post">
+                @* Info Card *@
+                <div class="kfc-checkout-card">
+                    <div class="kfc-card-header">
+                        <h5><i class="bi bi-geo-alt-fill me-2"></i> Thông tin giao hàng</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label"><i class="bi bi-person me-1"></i> Người nhận</label>
+                            <input type="text" class="form-control" value="@userName" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="deliveryAddress" class="form-label"><i class="bi bi-map me-1"></i> Địa chỉ nhận hàng <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3"
+                                      placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." required></textarea>
+                            <div class="form-text text-muted"><i class="bi bi-info-circle"></i> Tài xế sẽ gọi cho bạn khi đến nơi.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label"><i class="bi bi-pencil me-1"></i> Ghi chú cho nhà hàng</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"
+                                      placeholder="Ví dụ: Không lấy tương ớt, để đồ trước cửa..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                @* Payment Method Card *@
+                <div class="kfc-checkout-card">
+                    <div class="kfc-card-header">
+                        <h5><i class="bi bi-wallet2 me-2"></i> Phương thức thanh toán</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <label class="payment-option">
+                            <input type="radio" checked class="form-check-input me-3" style="font-size: 1.2rem; border-color: var(--kfc-red); background-color: var(--kfc-red);">
+                            <div>
+                                <i class="bi bi-cash-coin me-2 fs-5"></i> Thanh toán khi nhận hàng (COD)
+                            </div>
+                        </label>
+                        <div class="mt-3 text-muted small">
+                            <i class="bi bi-shield-lock-fill text-success"></i> Thông tin của bạn được bảo mật tuyệt đối.
+                        </div>
+                    </div>
+                </div>
+
+                @* Action Buttons (Mobile Order) *@
+                <div class="d-grid gap-2 d-lg-none">
+                    <button type="submit" class="btn btn-place-order">
+                        ĐẶT HÀNG NGAY - @finalTotal.ToString("N0") ₫
+                    </button>
+                    <a asp-action="Cart" class="btn btn-outline-secondary rounded-pill py-2">
+                        Quay lại giỏ hàng
+                    </a>
+                </div>
+
+                @* Desktop Button Container (Hidden on mobile) *@
+                <div class="d-none d-lg-block mt-4">
+                    <button type="submit" class="btn btn-place-order">
+                        <i class="bi bi-check-lg me-2"></i> XÁC NHẬN ĐẶT HÀNG
+                    </button>
+                    <a asp-action="Cart" class="d-inline-block mt-3 text-muted text-decoration-none fw-bold">
+                        <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        @* --- RIGHT COL: ORDER SUMMARY (RECEIPT) --- *@
+        <div class="col-lg-5">
+            <div class="kfc-checkout-card sticky-top" style="top: 100px;">
+                <div class="kfc-card-header bg-light">
+                    <h5><i class="bi bi-receipt me-2"></i> Tóm tắt đơn hàng</h5>
+                </div>
+                <div class="card-body p-4">
+                    @* Item List *@
+                    <div class="receipt-list mb-3">
+                        @foreach (var item in Model)
+                        {
+                            <div class="receipt-item">
+                                <img src="@item.ImageUrl" alt="@item.Name" class="receipt-img" />
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-0 fw-bold" style="font-size: 0.95rem;">@item.Name</h6>
+                                            <small class="text-muted">@item.Type</small>
+                                        </div>
+                                        <span class="fw-bold text-dark">@item.TotalPrice.ToString("N0") ₫</span>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        Số lượng: <strong class="text-danger">x @item.Quantity</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @* Calculations *@
+                    <div class="mt-4">
+                        <div class="summary-row">
+                            <span>Tạm tính</span>
+                            <span class="fw-bold">@cartTotal.ToString("N0") ₫</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Phí giao hàng</span>
+                            @if (shippingFee == 0)
+                            {
+                                <span class="text-success fw-bold">Miễn phí</span>
+                            }
+                            else
+                            {
+                                <span class="fw-bold">@shippingFee.ToString("N0") ₫</span>
+                            }
+                        </div>
+
+                        <div class="total-row">
+                            <span class="fw-bold text-uppercase fs-5">Tổng thanh toán</span>
+                            <span class="final-price">@finalTotal.ToString("N0") ₫</span>
+                        </div>
+                    </div>
+
+                    @* Policy Info *@
+                    <div class="alert alert-warning border-0 mt-4 mb-0 small">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        Đơn hàng sẽ được giao trong vòng <strong>30-45 phút</strong>. Vui lòng để ý điện thoại.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

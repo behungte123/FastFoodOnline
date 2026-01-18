@@ -1,0 +1,384 @@
+@model FastFoodOnline.Models.Combo
+
+@{
+    ViewData["Title"] = "Thêm Combo Mới";
+    var foods = ViewBag.Foods as List<FastFoodOnline.Models.Food>;
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Form Card */
+    .kfc-form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .kfc-card-header {
+        background-color: white;
+        padding: 20px 30px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .kfc-card-header h4 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            border-left: 5px solid var(--kfc-red);
+            padding-left: 15px;
+            letter-spacing: 0.5px;
+        }
+
+    /* Inputs */
+    .form-label {
+        font-weight: 600;
+        color: var(--kfc-dark);
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #dee2e6;
+        background-color: #fcfcfc;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: var(--kfc-red);
+            box-shadow: 0 0 0 0.2rem rgba(228, 0, 43, 0.15);
+            background-color: #fff;
+        }
+
+    /* Switch Toggle */
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--kfc-red);
+        border-color: var(--kfc-red);
+    }
+
+    /* Food Selection Table */
+    .food-selection-container {
+        border: 1px solid #eee;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .food-search-box {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+
+    .scrollable-table {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .table-food thead th {
+        background-color: white;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        border-bottom: 2px solid #eee;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #888;
+    }
+
+    .table-food tbody td {
+        vertical-align: middle;
+        padding: 10px 15px;
+    }
+
+    .food-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #eee;
+    }
+
+    /* Buttons */
+    .btn-save {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 12px 40px;
+        border: none;
+        box-shadow: 0 4px 10px rgba(228, 0, 43, 0.3);
+        transition: all 0.3s;
+    }
+
+        .btn-save:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-back {
+        background-color: #f0f0f0;
+        color: #666;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: 700;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            background-color: #e0e0e0;
+            color: var(--kfc-dark);
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="kfc-form-card">
+        <div class="kfc-card-header">
+            <h4>Tạo Combo Mới</h4>
+            <a asp-action="Combos" class="btn-back">
+                <i class="bi bi-arrow-left me-2"></i> Quay lại
+            </a>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="CreateCombo" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4"></div>
+
+                @* --- Phần 1: Thông tin chung --- *@
+                <h6 class="text-uppercase text-muted fw-bold mb-3 small ls-1"><i class="bi bi-info-circle me-1"></i> Thông tin cơ bản</h6>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Tên Combo</label>
+                        <input asp-for="Name" class="form-control" placeholder="Ví dụ: Combo Gia Đình Vui Vẻ" />
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Price" class="form-label">Giá bán</label>
+                        <div class="input-group">
+                            <input asp-for="Price" class="form-control border-end-0" type="number" step="1000" placeholder="0" />
+                            <span class="input-group-text bg-white text-muted border-start-0">VNĐ</span>
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label">Mô tả</label>
+                        <textarea asp-for="Description" class="form-control" rows="2" placeholder="Mô tả các món có trong combo..."></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ImageUrl" class="form-label">Hình ảnh (URL)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check form-switch ps-0">
+                            <label class="form-check-label fw-bold me-3" for="IsActiveToggle">Trạng thái:</label>
+                            <input asp-for="IsActive" class="form-check-input ms-0" type="checkbox" id="IsActiveToggle" checked>
+                            <label class="form-check-label ms-2" for="IsActiveToggle">Kích hoạt ngay</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="dashed-line my-4" style="border-top: 1px dashed #eee;">
+
+                @* --- Phần 2: Chọn món --- *@
+                <h6 class="text-uppercase text-muted fw-bold mb-3 small ls-1">
+                    <i class="bi bi-basket2 me-1"></i> Chọn món ăn vào Combo
+                </h6>
+
+                <div class="food-selection-container">
+                    <div class="food-search-box">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                            <input type="text" id="foodSearch" class="form-control border-start-0" placeholder="Tìm kiếm món ăn..." onkeyup="filterFoods()">
+                        </div>
+                    </div>
+
+                    <div class="scrollable-table">
+                        <table class="table table-hover table-food mb-0" id="foodTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;" class="text-center">
+                                        <input type="checkbox" class="form-check-input" id="selectAll" onclick="toggleSelectAll(this)" />
+                                    </th>
+                                    <th style="width: 70px;">Ảnh</th>
+                                    <th>Tên món</th>
+                                    <th>Danh mục</th>
+                                    <th style="width: 120px;">Số lượng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (foods != null && foods.Any())
+                                {
+                                    foreach (var food in foods)
+                                    {
+                                        <tr>
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input food-checkbox"
+                                                       value="@food.Id"
+                                                       onchange="toggleQuantityInput(this, 'qty_@food.Id')" />
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(food.ImageUrl))
+                                                {
+                                                    <img src="@food.ImageUrl" class="food-thumb" alt="img" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="food-thumb bg-light d-flex align-items-center justify-content-center text-muted">
+                                                        <i class="bi bi-image"></i>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-dark food-name">@food.Name</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">@food.Category?.Name</span>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control form-control-sm text-center fw-bold"
+                                                       id="qty_@food.Id"
+                                                       min="1" max="50" value="1" disabled />
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            Chưa có dữ liệu món ăn.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end pt-4 mt-2">
+                    <button type="submit" class="btn btn-save">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Tạo Combo Mới
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // 1. Filter Foods
+        function filterFoods() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("foodSearch");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("foodTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[2]; // Name column
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // 2. Select All
+        function toggleSelectAll(source) {
+            const checkboxes = document.querySelectorAll('.food-checkbox');
+            checkboxes.forEach(cb => {
+                if(cb.closest('tr').style.display !== 'none'){
+                    cb.checked = source.checked;
+                    toggleQuantityInput(cb, 'qty_' + cb.value);
+                }
+            });
+        }
+
+        // 3. Enable Input Logic
+        function toggleQuantityInput(checkbox, inputId) {
+            var input = document.getElementById(inputId);
+            if (checkbox.checked) {
+                input.disabled = false;
+                if(input.value == "") input.value = 1;
+                input.focus();
+            } else {
+                input.disabled = true;
+                input.value = 1; // Reset to default
+            }
+        }
+
+        // 4. Submit Logic
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Clear temp inputs
+            document.querySelectorAll('input[name="foodIds"], input[name="quantities"]').forEach(el => el.remove());
+
+            const selectedCheckboxes = document.querySelectorAll('.food-checkbox:checked');
+            const form = this;
+
+            selectedCheckboxes.forEach(checkbox => {
+                const foodId = checkbox.value;
+                const qtyInput = document.getElementById('qty_' + foodId);
+                const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
+
+                if (quantity > 0) {
+                    // Create hidden inputs for the Controller
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'foodIds';
+                    idInput.value = foodId;
+                    form.appendChild(idInput);
+
+                    const qInput = document.createElement('input');
+                    qInput.type = 'hidden';
+                    qInput.name = 'quantities';
+                    qInput.value = quantity;
+                    form.appendChild(qInput);
+                }
+            });
+        });
+    </script>
+}

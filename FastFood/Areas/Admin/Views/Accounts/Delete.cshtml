@@ -1,0 +1,239 @@
+@model FastFoodOnline.Models.Account
+
+@{
+    ViewData["Title"] = "Xóa tài khoản";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Container căn giữa */
+    .delete-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Card chính */
+    .kfc-delete-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border: none;
+        overflow: hidden;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+    }
+
+        /* Thanh màu đỏ trên cùng */
+        .kfc-delete-card::before {
+            content: '';
+            display: block;
+            height: 6px;
+            background: var(--kfc-red);
+            width: 100%;
+        }
+
+    .card-content {
+        padding: 40px 30px;
+    }
+
+    /* Icon cảnh báo */
+    .warning-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2.5rem;
+        animation: shake 2s infinite;
+    }
+
+    @@keyframes shake {
+        0%, 100%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        transform: rotate(-5deg);
+    }
+
+    20%, 40%, 60%, 80% {
+        transform: rotate(5deg);
+    }
+
+    }
+
+    /* Tiêu đề */
+    .delete-title {
+        font-weight: 800;
+        color: var(--kfc-dark);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .delete-message {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 30px;
+    }
+
+    /* User Summary Box */
+    .user-summary {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: left;
+        border: 1px dashed #ddd;
+    }
+
+    .info-row {
+        display: flex;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .info-label {
+        width: 110px;
+        color: #888;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .info-value {
+        color: var(--kfc-dark);
+        font-weight: 600;
+    }
+
+    /* Badges */
+    .badge-soft-danger {
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .badge-soft-primary {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    /* Buttons */
+    .btn-confirm-delete {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 30px;
+        border: none;
+        width: 100%;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(228, 0, 43, 0.3);
+    }
+
+        .btn-confirm-delete:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(228, 0, 43, 0.4);
+            color: white;
+        }
+
+    .btn-cancel {
+        color: #666;
+        font-weight: 600;
+        background: transparent;
+        border: none;
+        margin-top: 15px;
+        display: inline-block;
+        transition: color 0.2s;
+    }
+
+        .btn-cancel:hover {
+            color: var(--kfc-dark);
+            text-decoration: underline;
+        }
+</style>
+
+<div class="delete-wrapper fade-in-up">
+    <div class="kfc-delete-card">
+        <div class="card-content">
+            <div class="warning-icon-wrapper">
+                <i class="bi bi-trash3-fill"></i>
+            </div>
+
+            <h3 class="delete-title">Xác nhận xóa?</h3>
+            <p class="delete-message">
+                Hành động này <strong>không thể hoàn tác</strong>. <br>
+                Bạn có chắc chắn muốn xóa tài khoản này khỏi hệ thống?
+            </p>
+
+            <div class="user-summary">
+                <div class="info-row">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value">#@Model.Id</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Họ tên:</span>
+                    <span class="info-value">@Model.FullName</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">@Model.Email</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Vai trò:</span>
+                    <span class="info-value">
+                        @if (Model.RoleId == 1)
+                        {
+                            <span class="badge-soft-danger text-uppercase" style="font-size: 0.75rem;">Admin</span>
+                        }
+                        else
+                        {
+                            <span class="badge-soft-primary text-uppercase" style="font-size: 0.75rem;">Khách hàng</span>
+                        }
+                    </span>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <button type="submit" class="btn btn-confirm-delete">
+                    <i class="bi bi-trash-fill me-2"></i> XÓA TÀI KHOẢN
+                </button>
+
+                <br>
+
+                <a asp-action="Index" class="btn-cancel">
+                    Hủy bỏ, quay lại danh sách
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

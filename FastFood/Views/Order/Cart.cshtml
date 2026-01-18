@@ -1,0 +1,312 @@
+@model List<FastFoodOnline.Models.CartItem>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    var cartTotal = (decimal)ViewBag.CartTotal;
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Cart Header */
+    .cart-header-title {
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--kfc-dark);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Cards */
+    .kfc-cart-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: none;
+        overflow: hidden;
+    }
+
+    .kfc-card-header {
+        background-color: white;
+        padding: 20px 25px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+        .kfc-card-header h5 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            border-left: 5px solid var(--kfc-red);
+            padding-left: 15px;
+        }
+
+    /* Table Customization */
+    .kfc-table-cart thead th {
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        border: none;
+        padding: 15px;
+    }
+
+    .kfc-table-cart tbody td {
+        vertical-align: middle;
+        padding: 15px;
+        border-bottom: 1px dashed #e0e0e0;
+    }
+
+    .kfc-table-cart tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Input Quantity */
+    .qty-input {
+        border-radius: 50px;
+        text-align: center;
+        border: 2px solid #eee;
+        font-weight: 700;
+        width: 60px;
+        padding: 5px;
+        color: var(--kfc-dark);
+    }
+
+        .qty-input:focus {
+            border-color: var(--kfc-red);
+            box-shadow: none;
+        }
+
+    /* Remove Button */
+    .btn-remove {
+        color: #999;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-remove:hover {
+            color: var(--kfc-red);
+            background-color: #fff0f3;
+            border-color: #ffccd5;
+        }
+
+    /* Summary Panel */
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .total-price {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--kfc-red);
+    }
+
+    .btn-checkout {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 15px;
+        width: 100%;
+        border: none;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(228, 0, 43, 0.4);
+        transition: all 0.3s;
+    }
+
+        .btn-checkout:hover {
+            background-color: #c40024;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(228, 0, 43, 0.5);
+            color: white;
+        }
+
+    .btn-clear-cart {
+        color: #888;
+        font-size: 0.9rem;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        transition: color 0.2s;
+    }
+
+        .btn-clear-cart:hover {
+            color: var(--kfc-red);
+        }
+</style>
+
+<div class="container mt-4 fade-in-up mb-5">
+    @* --- Header --- *@
+    <div class="mb-4">
+        <h1 class="cart-header-title"><i class="bi bi-basket2-fill text-danger me-2"></i> Giỏ hàng của bạn</h1>
+        <p class="text-muted">Kiểm tra lại món ăn và tiến hành thanh toán</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        @* --- Empty State --- *@
+        <div class="kfc-cart-card text-center p-5">
+            <div class="card-body">
+                <div class="mb-4">
+                    <i class="bi bi-cart-x" style="font-size: 5rem; color: #eee;"></i>
+                </div>
+                <h3 class="fw-bold text-muted mb-3">Giỏ hàng đang trống</h3>
+                <p class="text-muted mb-4">Bạn chưa chọn món ăn nào. Hãy ghé thực đơn để chọn món ngon nhé!</p>
+                <a asp-controller="Foods" asp-action="Index" class="btn btn-danger rounded-pill px-5 py-3 fw-bold shadow-sm">
+                    KHÁM PHÁ THỰC ĐƠN
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @* --- LEFT COL: CART ITEMS --- *@
+            <div class="col-lg-8">
+                <div class="kfc-cart-card">
+                    <div class="kfc-card-header d-flex justify-content-between align-items-center">
+                        <h5>Sản phẩm đã chọn</h5>
+                        <form asp-action="ClearCart" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-link btn-clear-cart p-0 border-0"
+                                    onclick="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')">
+                                <i class="bi bi-trash3 me-1"></i> Xóa tất cả
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table kfc-table-cart mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 100px;">Hình ảnh</th>
+                                        <th>Món ăn</th>
+                                        <th class="text-center" style="width: 140px;">Đơn giá</th>
+                                        <th class="text-center" style="width: 120px;">Số lượng</th>
+                                        <th class="text-end" style="width: 140px;">Thành tiền</th>
+                                        <th style="width: 60px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="rounded-3 overflow-hidden" style="width: 80px; height: 80px; border: 1px solid #eee;">
+                                                    <img src="@item.ImageUrl" alt="@item.Name" style="width: 100%; height: 100%; object-fit: cover;" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <h6 class="mb-1 fw-bold text-dark">@item.Name</h6>
+                                                @if (item.Type == "Combo")
+                                                {
+                                                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">COMBO</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-light text-secondary" style="font-size: 0.7rem;">MÓN LẺ</span>
+                                                }
+                                            </td>
+                                            <td class="text-center text-muted fw-bold">
+                                                @item.Price.ToString("N0") ₫
+                                            </td>
+                                            <td class="text-center">
+                                                <form asp-action="UpdateQuantity" method="post">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <input type="hidden" name="type" value="@item.Type" />
+                                                    <input type="number" name="quantity" value="@item.Quantity" min="1" max="50"
+                                                           class="form-control qty-input mx-auto"
+                                                           onchange="this.form.submit()" />
+                                                </form>
+                                            </td>
+                                            <td class="text-end fw-bold text-danger">
+                                                @item.TotalPrice.ToString("N0") ₫
+                                            </td>
+                                            <td class="text-end">
+                                                <form asp-action="RemoveFromCart" method="post">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <input type="hidden" name="type" value="@item.Type" />
+                                                    <button type="submit" class="btn btn-remove ms-auto" title="Xóa món này">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-top-0 p-3">
+                        <a asp-controller="Foods" asp-action="Index" class="btn btn-outline-dark rounded-pill fw-bold btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Mua thêm món khác
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @* --- RIGHT COL: SUMMARY --- *@
+            <div class="col-lg-4">
+                <div class="kfc-cart-card sticky-top" style="top: 100px; z-index: 99;">
+                    <div class="kfc-card-header">
+                        <h5>Thanh toán</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="summary-row">
+                            <span>Tổng số món:</span>
+                            <span class="fw-bold">@Model.Sum(x => x.Quantity)</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tạm tính:</span>
+                            <span class="fw-bold">@cartTotal.ToString("N0") ₫</span>
+                        </div>
+
+                        <hr class="dashed-line my-3" style="border-top: 2px dashed #eee;">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fw-bold text-uppercase">Tổng cộng</span>
+                            <span class="total-price">@cartTotal.ToString("N0") ₫</span>
+                        </div>
+
+                        <a asp-action="Checkout" class="btn btn-checkout mb-3">
+                            THANH TOÁN NGAY
+                        </a>
+
+                        @if (Context.Session.GetString("UserName") == null)
+                        {
+                            <div class="alert alert-warning border-0 small d-flex align-items-start" role="alert">
+                                <i class="bi bi-exclamation-circle-fill me-2 mt-1"></i>
+                                <div>
+                                    Bạn cần <a asp-controller="Account" asp-action="Login" class="alert-link">Đăng nhập</a> để tiếp tục thanh toán.
+                                </div>
+                            </div>
+                        }
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted"><i class="bi bi-shield-check me-1"></i> Bảo mật thanh toán 100%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

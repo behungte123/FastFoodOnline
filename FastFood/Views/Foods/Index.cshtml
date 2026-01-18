@@ -1,0 +1,412 @@
+@using FastFoodOnline.Models
+@model PaginatedList<FastFoodOnline.Models.Food>
+
+@{
+    ViewData["Title"] = "Thực đơn";
+    var categories = ViewBag.Categories as List<FastFoodOnline.Models.FoodCategory>;
+
+    // Biến hỗ trợ phân trang
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Header Section */
+    .menu-header {
+        position: relative;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .menu-header h1 {
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--kfc-dark);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .menu-header::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 4px;
+        background-color: var(--kfc-red);
+        margin: 10px auto;
+        border-radius: 2px;
+    }
+
+    /* Filter Section */
+    .kfc-filter-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+        border-top: 4px solid var(--kfc-red);
+    }
+
+    .form-label {
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 1px solid #eee;
+        padding: 10px 15px;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+        background-color: #fcfcfc;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--kfc-red);
+        box-shadow: 0 0 0 0.2rem rgba(228, 0, 43, 0.1);
+        background-color: white;
+    }
+
+    .btn-filter {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        transition: all 0.2s;
+        height: 46px;
+    }
+
+    .btn-filter:hover {
+        background-color: #be0024;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(228, 0, 43, 0.3);
+        color: white;
+    }
+
+    /* Food Card Styles */
+    .kfc-card {
+        border: none;
+        border-radius: 16px;
+        background: white;
+        transition: all 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kfc-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(228, 0, 43, 0.15);
+    }
+
+    .kfc-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+    }
+
+    .kfc-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .kfc-card:hover .kfc-img-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .kfc-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .card-body {
+        padding: 1.25rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: var(--kfc-dark);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .kfc-price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--kfc-red);
+        margin: 10px 0;
+    }
+
+    .btn-kfc-add {
+        background-color: var(--kfc-red);
+        color: white;
+        border-radius: 50px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-kfc-add:hover {
+        background-color: #be0024;
+        color: white;
+    }
+
+    .btn-kfc-view {
+        background-color: white;
+        color: var(--kfc-red);
+        border: 2px solid var(--kfc-red);
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+
+    .btn-kfc-view:hover {
+        background-color: var(--kfc-red);
+        color: white;
+    }
+
+    .tag-badge {
+        background-color: #f0f0f0;
+        color: #666;
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    /* --- PHÂN TRANG CUSTOM STYLE --- */
+    .pagination .page-link {
+        color: var(--kfc-red);
+        border: 1px solid #dee2e6;
+        margin: 0 5px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: var(--kfc-red);
+        border-color: var(--kfc-red);
+        color: white;
+        box-shadow: 0 4px 10px rgba(228, 0, 43, 0.3);
+    }
+
+    .pagination .page-link:hover {
+        color: #be0024;
+        background-color: #ffe6e9;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #ccc;
+        background-color: #f8f9fa;
+    }
+</style>
+
+<div class="container mt-4 fade-in-up">
+    @* --- HEADER --- *@
+    <div class="menu-header">
+        <h1>Thực Đơn</h1>
+        <p class="text-muted">Hương vị độc đáo, giòn tan khó cưỡng!</p>
+    </div>
+
+    @* --- FILTER SECTION --- *@
+    <div class="kfc-filter-card">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label"><i class="bi bi-search me-1"></i> Tìm món</label>
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Gà rán, Burger..." />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label"><i class="bi bi-grid me-1"></i> Danh mục</label>
+                <select name="categoryId" class="form-select">
+                    <option value="">Tất cả</option>
+                    @if (categories != null)
+                    {
+                        foreach (var c in categories)
+                        {
+                            <option value="@c.Id" selected="@(ViewBag.CategoryId != null && (int)ViewBag.CategoryId == c.Id ? "selected" : null)">
+                                @c.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Giá từ (đ)</label>
+                <input type="number" name="minPrice" value="@ViewBag.MinPrice" class="form-control" placeholder="0" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Giá đến (đ)</label>
+                <input type="number" name="maxPrice" value="@ViewBag.MaxPrice" class="form-control" placeholder="Tối đa" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label"><i class="bi bi-tags me-1"></i> Từ khóa</label>
+                <input type="text" name="tag" value="@ViewBag.Tag" class="form-control" placeholder="cay, không xương..." />
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-filter">
+                    <i class="bi bi-funnel-fill"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @* --- FOOD LIST --- *@
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-search" style="font-size: 3rem; color: #ddd;"></i>
+            <h5 class="mt-3 text-muted">Không tìm thấy món ăn nào phù hợp.</h5>
+            <p class="text-muted small">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm nhé!</p>
+            <a href="@Url.Action("Index")" class="btn btn-outline-danger rounded-pill mt-2">Xóa bộ lọc</a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="text-muted fw-bold mb-0">
+                <i class="bi bi-check-circle-fill text-danger me-1"></i> 
+                @* Hiển thị số trang / tổng số trang *@
+                Trang @Model.PageIndex / @Model.TotalPages
+            </p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            @foreach (var food in Model)
+            {
+                <div class="col fade-in-up">
+                    <div class="kfc-card h-100">
+                        <div class="kfc-img-wrapper">
+                            @if(food.Category != null)
+                            {
+                                <span class="kfc-badge">@food.Category.Name</span>
+                            }
+                            <img src="@food.ImageUrl" alt="@food.Name" />
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" title="@food.Name">@food.Name</h5>
+                            
+                            @if (!string.IsNullOrEmpty(food.Tag))
+                            {
+                                <div class="mb-2">
+                                    <span class="tag-badge">#@food.Tag</span>
+                                </div>
+                            }
+
+                            <p class="card-text text-muted small flex-grow-1">
+                                @if (!string.IsNullOrEmpty(food.Description))
+                                {
+                                    @(food.Description.Length > 60 ? food.Description.Substring(0, 60) + "..." : food.Description)
+                                }
+                            </p>
+                            
+                            <div class="mt-auto">
+                                <span class="kfc-price d-block">@food.Price.ToString("N0") ₫</span>
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        <form asp-controller="Order" asp-action="AddFoodToCart" method="post">
+                                            <input type="hidden" name="id" value="@food.Id" />
+                                            <input type="hidden" name="quantity" value="1" />
+                                            <button type="submit" class="btn btn-kfc-add btn-sm w-100 py-2">
+                                                THÊM GIỎ
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col-4">
+                                        <a asp-action="Details" asp-route-id="@food.Id" class="btn btn-kfc-view btn-sm w-100 py-2">
+                                            XEM
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* --- THANH PHÂN TRANG (MỚI THÊM) --- *@
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center pb-5">
+                @* Nút Previous *@
+                <li class="page-item @prevDisabled">
+                    <a asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex - 1)"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-categoryId="@ViewBag.CategoryId"
+                       asp-route-minPrice="@ViewBag.MinPrice"
+                       asp-route-maxPrice="@ViewBag.MaxPrice"
+                       asp-route-tag="@ViewBag.Tag"
+                       class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                @* Hiển thị các số trang *@
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a asp-action="Index"
+                           asp-route-pageNumber="@i"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-categoryId="@ViewBag.CategoryId"
+                           asp-route-minPrice="@ViewBag.MinPrice"
+                           asp-route-maxPrice="@ViewBag.MaxPrice"
+                           asp-route-tag="@ViewBag.Tag"
+                           class="page-link">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                @* Nút Next *@
+                <li class="page-item @nextDisabled">
+                    <a asp-action="Index"
+                       asp-route-pageNumber="@(Model.PageIndex + 1)"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-categoryId="@ViewBag.CategoryId"
+                       asp-route-minPrice="@ViewBag.MinPrice"
+                       asp-route-maxPrice="@ViewBag.MaxPrice"
+                       asp-route-tag="@ViewBag.Tag"
+                       class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>

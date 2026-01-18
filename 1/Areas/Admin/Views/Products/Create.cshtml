@@ -1,0 +1,290 @@
+@model FastFoodOnline.Models.Food
+
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+    }
+
+    /* Form Card */
+    .kfc-form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: none;
+        overflow: hidden;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .kfc-card-header {
+        background-color: white;
+        padding: 20px 30px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .kfc-card-header h4 {
+            color: var(--kfc-dark);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            border-left: 5px solid var(--kfc-red);
+            padding-left: 15px;
+            letter-spacing: 0.5px;
+        }
+
+    /* Inputs */
+    .form-label {
+        font-weight: 600;
+        color: var(--kfc-dark);
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #dee2e6;
+        background-color: #fcfcfc;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--kfc-red);
+            box-shadow: 0 0 0 0.2rem rgba(228, 0, 43, 0.15);
+            background-color: #fff;
+        }
+
+    /* Image Preview */
+    .img-preview-box {
+        width: 100%;
+        height: 250px;
+        border: 2px dashed #ddd;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+        margin-bottom: 15px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .img-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+
+    /* Switch */
+    .form-switch .form-check-input {
+        width: 3em;
+        height: 1.5em;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--kfc-red);
+            border-color: var(--kfc-red);
+        }
+
+    /* Buttons */
+    .btn-save {
+        background-color: var(--kfc-red);
+        color: white;
+        font-weight: 800;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 12px 40px;
+        border: none;
+        box-shadow: 0 4px 10px rgba(228, 0, 43, 0.3);
+        transition: all 0.3s;
+    }
+
+        .btn-save:hover {
+            background-color: #c40024;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+    .btn-back {
+        background-color: #f0f0f0;
+        color: #666;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: 700;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+        .btn-back:hover {
+            background-color: #e0e0e0;
+            color: var(--kfc-dark);
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="kfc-form-card">
+        <div class="kfc-card-header">
+            <h4>Thêm sản phẩm mới</h4>
+            <a asp-action="Index" class="btn-back">
+                <i class="bi bi-arrow-left me-2"></i> Quay lại
+            </a>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4"></div>
+
+                <div class="row g-5">
+                    @* --- CỘT TRÁI: THÔNG TIN CHI TIẾT --- *@
+                    <div class="col-lg-8">
+                        <h6 class="text-uppercase text-muted fw-bold mb-3 small ls-1">
+                            <i class="bi bi-card-text me-1"></i> Thông tin cơ bản
+                        </h6>
+
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label">Tên món ăn <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control form-control-lg fw-bold" placeholder="Ví dụ: Gà Rán Giòn Cay" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Price" class="form-label">Đơn giá</label>
+                                <div class="input-group">
+                                    <input asp-for="Price" class="form-control" type="number" step="1000" placeholder="0" />
+                                    <span class="input-group-text bg-light text-muted border-start-0 fw-bold">VNĐ</span>
+                                </div>
+                                <span asp-validation-for="Price" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CategoryId" class="form-label">Danh mục</label>
+                                <select asp-for="CategoryId" class="form-select">
+                                    <option value="">-- Chọn danh mục --</option>
+                                    @if (ViewBag.Categories != null)
+                                    {
+                                        foreach (var category in ViewBag.Categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label">Mô tả món ăn</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả hương vị, thành phần..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Tag" class="form-label">Từ khóa (Tags)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-tags"></i></span>
+                                <input asp-for="Tag" class="form-control border-start-0 ps-0" placeholder="cay, không xương, best seller..." />
+                            </div>
+                            <small class="text-muted">Các từ khóa cách nhau bởi dấu phẩy.</small>
+                        </div>
+                    </div>
+
+                    @* --- CỘT PHẢI: HÌNH ẢNH & TRẠNG THÁI --- *@
+                    <div class="col-lg-4 border-start-lg">
+                        <h6 class="text-uppercase text-muted fw-bold mb-3 small ls-1">
+                            <i class="bi bi-image me-1"></i> Hình ảnh & Trạng thái
+                        </h6>
+
+                        <div class="img-preview-box">
+                            <img src="" id="imagePreview" alt="Preview" style="display: none;" />
+                            <div id="placeholderText" class="text-muted text-center p-3">
+                                <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                <span>Chưa có hình ảnh</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ImageUrl" class="form-label">URL Hình ảnh</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-link-45deg"></i></span>
+                                <input asp-for="ImageUrl" class="form-control border-start-0 ps-0" id="imageUrlInput" placeholder="https://example.com/image.jpg" oninput="updatePreview()" />
+                            </div>
+                            <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                        </div>
+
+                        <div class="card bg-light border-0 p-3 rounded-3 mt-4">
+                            <div class="form-check form-switch d-flex align-items-center ps-0">
+                                <label class="form-check-label fw-bold me-auto text-dark" for="isActiveSwitch">Kích hoạt ngay</label>
+                                <input asp-for="IsActive" class="form-check-input ms-0" type="checkbox" role="switch" id="isActiveSwitch" checked>
+                            </div>
+                            <small class="text-muted mt-2 d-block">Sản phẩm sẽ được hiển thị trên trang chủ ngay sau khi tạo.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end pt-4 mt-3 border-top">
+                    <button type="submit" class="btn btn-save">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Tạo sản phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function updatePreview() {
+            const input = document.getElementById('imageUrlInput');
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('placeholderText');
+
+            const url = input.value.trim();
+
+            if (url) {
+                preview.src = url;
+                preview.style.display = 'block';
+                if(placeholder) placeholder.style.display = 'none';
+
+                // Handle error if image link is broken
+                preview.onerror = function() {
+                    preview.style.display = 'none';
+                    if(placeholder) {
+                        placeholder.style.display = 'block';
+                        placeholder.querySelector('span').innerText = 'Lỗi tải ảnh';
+                    }
+                };
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                if(placeholder) {
+                    placeholder.style.display = 'block';
+                    placeholder.querySelector('span').innerText = 'Chưa có hình ảnh';
+                }
+            }
+        }
+    </script>
+}

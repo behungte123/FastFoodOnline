@@ -1,0 +1,391 @@
+@model IEnumerable<FastFoodOnline.Models.Order>
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    :root {
+        --kfc-red: #E4002B;
+        --kfc-dark: #202124;
+        --kfc-gray: #f8f9fa;
+        --kfc-blue: #007bff;
+        --kfc-green: #28a745;
+        --kfc-warning: #ffc107;
+    }
+
+    body {
+        background-color: var(--kfc-gray);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Page Header */
+    .admin-header h2 {
+        color: var(--kfc-dark);
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+    }
+
+    .date-badge {
+        background-color: white;
+        color: var(--kfc-red);
+        font-weight: 700;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid #eee;
+    }
+
+    /* Stats Cards */
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        transition: all 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #ddd; /* Default color */
+        }
+
+        .stat-card.blue::before {
+            background-color: var(--kfc-blue);
+        }
+
+        .stat-card.orange::before {
+            background-color: var(--kfc-warning);
+        }
+
+        .stat-card.green::before {
+            background-color: var(--kfc-green);
+        }
+
+        .stat-card.red::before {
+            background-color: var(--kfc-red);
+        }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+
+    .icon-blue {
+        background-color: #e7f1ff;
+        color: var(--kfc-blue);
+    }
+
+    .icon-orange {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .icon-green {
+        background-color: #d1e7dd;
+        color: var(--kfc-green);
+    }
+
+    .icon-red {
+        background-color: #fff0f3;
+        color: var(--kfc-red);
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--kfc-dark);
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #888;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* Table Section */
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 20px 25px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 0;
+        color: var(--kfc-dark);
+        border-left: 5px solid var(--kfc-red);
+        padding-left: 15px;
+    }
+
+    .admin-table thead th {
+        background-color: #fcfcfc;
+        color: #666;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-bottom: 2px solid #eee;
+        padding: 15px 20px;
+    }
+
+    .admin-table tbody td {
+        padding: 15px 20px;
+        vertical-align: middle;
+        border-bottom: 1px dashed #eee;
+        color: #444;
+        font-weight: 500;
+    }
+
+    .admin-table tbody tr:hover {
+        background-color: #fffbfc;
+    }
+
+    /* Status Badges (Soft Style) */
+    .badge-soft {
+        padding: 6px 12px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .badge-soft-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-soft-info {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    .badge-soft-success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .badge-soft-danger {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0f0f0;
+        color: #666;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+        .btn-action:hover {
+            background-color: var(--kfc-red);
+            color: white;
+        }
+</style>
+
+<div class="container-fluid py-4 fade-in-up">
+    <div class="d-flex justify-content-between align-items-end mb-4 admin-header">
+        <div>
+            <h2 class="mb-1">Dashboard</h2>
+            <p class="text-muted mb-0">Xin chào Admin, dưới đây là tổng quan tình hình kinh doanh.</p>
+        </div>
+        <div class="date-badge px-3 py-2 rounded-pill">
+            <i class="bi bi-calendar-event me-2"></i> @DateTime.Now.ToString("dd/MM/yyyy")
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card blue">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box icon-blue">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">Khách hàng</div>
+                        <div class="stat-value">@ViewBag.TotalAccounts</div>
+                        <small class="text-primary fw-bold" style="font-size: 0.8rem;">
+                            <i class="bi bi-caret-up-fill"></i> @ViewBag.TotalCustomers <span class="text-muted fw-normal">active</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card orange">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box icon-orange">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">Tổng đơn hàng</div>
+                        <div class="stat-value">@ViewBag.TotalOrders</div>
+                        <small class="text-warning fw-bold" style="font-size: 0.8rem;">
+                            <i class="bi bi-hourglass-split"></i> @ViewBag.PendingOrders <span class="text-muted fw-normal">chờ xử lý</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card green">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box icon-green">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">Doanh thu</div>
+                        <div class="stat-value text-success">@ViewBag.TotalRevenue.ToString("N0") <small class="fs-6">đ</small></div>
+                        <small class="text-muted" style="font-size: 0.8rem;">Tổng thu toàn thời gian</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card red">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box icon-red">
+                        <i class="bi bi-basket2-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-label">Món ăn</div>
+                        <div class="stat-value">@ViewBag.TotalFoods</div>
+                        <small class="text-danger fw-bold" style="font-size: 0.8rem;">
+                            <i class="bi bi-stars"></i> @ViewBag.TotalCombos <span class="text-muted fw-normal">combo</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="table-card">
+                <div class="table-header">
+                    <h5 class="table-title">Đơn hàng mới nhất</h5>
+                    <a href="@Url.Action("Index", "Orders", new { area = "Admin" })" class="btn btn-sm btn-outline-danger rounded-pill fw-bold px-3">
+                        Xem tất cả
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table admin-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Thời gian</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Any())
+                            {
+                                @foreach (var order in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-dark">#@order.Id</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2 text-muted" style="width: 32px; height: 32px;">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <span class="fw-semibold">@order.Account?.FullName</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-muted">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="fw-bold text-danger">@order.TotalAmount.ToString("N0") đ</td>
+                                        <td>
+                                            @if (order.Status == "Pending")
+                                            {
+                                                <span class="badge badge-soft badge-soft-warning">Chờ xử lý</span>
+                                            }
+                                            else if (order.Status == "Processing")
+                                            {
+                                                <span class="badge badge-soft badge-soft-info">Đang làm</span>
+                                            }
+                                            else if (order.Status == "Completed")
+                                            {
+                                                <span class="badge badge-soft badge-soft-success">Hoàn thành</span>
+                                            }
+                                            else if (order.Status == "Cancelled")
+                                            {
+                                                <span class="badge badge-soft badge-soft-danger">Đã hủy</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-light text-dark">@order.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="d-flex justify-content-end">
+                                                <a href="@Url.Action("Details", "Orders", new { area = "Admin", id = order.Id })" class="btn-action" title="Xem chi tiết">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="opacity-25 mb-3">
+                                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h6 class="text-muted">Chưa có đơn hàng nào gần đây</h6>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
