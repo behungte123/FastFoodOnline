@@ -77,7 +77,7 @@ File `appsettings.json` cần tự điền:
 
 ## 👨‍💻 Tác giả
 
-- Hưng – FPT Polytechnic  
+- Hùng – FPT Polytechnic  
 - Môn: Lập trình C# / ASP.NET Core
 
 ---
