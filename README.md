@@ -30,8 +30,6 @@ Cho phép người dùng đăng ký, đăng nhập, đặt món và quản trị
 ### 1. Clone source
 git clone https://github.com/beuhungte123/FastFoodOnline.git
 
-csharp
-Sao chép mã
 
 ### 2. Cấu hình database  
 Sửa file `appsettings.json`:
@@ -40,29 +38,16 @@ Sửa file `appsettings.json`:
 "DefaultConnection": "Server=YOUR_SERVER;Database=FastFoodDB;Trusted_Connection=True;TrustServerCertificate=True"
 }
 
-shell
-Sao chép mã
 
 ### 3. Chạy migration
 dotnet ef database update
 
-shell
-Sao chép mã
 
 ### 4. Run project
 dotnet run
 
-css
-Sao chép mã
-
-Truy cập:
-https://localhost:xxxx
-
-yaml
-Sao chép mã
 
 ---
-
 ## 🔐 Lưu ý cấu hình
 
 File `appsettings.json` cần tự điền:
