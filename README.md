@@ -28,24 +28,30 @@ Cho phép người dùng đăng ký, đăng nhập, đặt món và quản trị
 ## ⚙️ Cài đặt & chạy
 
 ### 1. Clone source
+```bash
 git clone https://github.com/beuhungte123/FastFoodOnline.git
-
+```
 
 ### 2. Cấu hình database  
 Sửa file `appsettings.json`:
-
+```bash
 "ConnectionStrings": {
 "DefaultConnection": "Server=YOUR_SERVER;Database=FastFoodDB;Trusted_Connection=True;TrustServerCertificate=True"
 }
-
+```
 
 ### 3. Chạy migration
+```bash
+dotnet ef migration add new1
+```
+```bash
 dotnet ef database update
-
+```
 
 ### 4. Run project
+```bash
 dotnet run
-
+```
 
 ---
 ## 🔐 Lưu ý cấu hình
